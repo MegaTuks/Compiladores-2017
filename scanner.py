@@ -1,5 +1,7 @@
+# Andres Marcelo Garza Cantu A00814236
+# Ruben Alejandro Hernandez Gonzalez A01175209
 
-
+# List of token names.   This is always required
 tokens = [
     'SEMICOLON', 'PUNTO',
     'COMMA', 'COLON', 'BRACKET_IZQ', 'BRACKET_DER', 'PARENTESIS_IZQ', 'PARENTESIS_DER', 'CORCHETE_IZQ', 'CORCHETE_DER',
@@ -40,8 +42,6 @@ t_PARENTESIS_IZQ = r'\('
 t_PARENTESIS_DER = r'\)'
 t_CORCHETE_IZQ = r'\['
 t_CORCHETE_DER = r'\]'
-t_INTER_IZQ = r'\¿'
-t_INTER_DER = r'\?'
 t_OPERADOR_IGUAL = r'\='
 t_OPERADOR_COMPARATIVO = r'[>]|[<]'
 t_OPERADOR_AND_OR = r'&&|\|\|'
@@ -97,6 +97,43 @@ def p_empty(p):
 def p_error(t):
     print("Error de sintaxis en '%s'" % t.value)
 
+#diagrama de sintaxis Inicial del pograma , Funcion principal 
+def p_Programa(t):
+    '''
+      Programa : ProgramaA FuncionPrincipal
+    '''
+
+
+#diagrama de sintaxis de como funciona el programa , puedes ahcer declaraciones, Funciones o clases antes de entrar al main
+def p_ProgramaA(t):
+    '''
+      ProgramaA : Declaracion ProgramaA
+      | Funcion ProgramaA
+      | empty
+    '''
+
+#funcion que corre el programa principal , necesaria para correr nuestro lenguaje
+def p_FuncionPrincipal(t):
+    '''
+    FuncionPrincipal : KEYWORD_PRINCIPAL PARENTESIS_IZQ PARENTESIS_DER Bloque
+    '''
+
+def p_Funcion(t):
+    '''
+    Funcion : KEYWORD_FUNCION Tipo IDENTIFICADOR PARENTESIS_IZQ FuncionA PARENTESIS_DER Bloque
+    '''
+
+def p_FuncionA(t):
+    '''
+    FuncionA : Tipo IDENTIFICADOR FuncionB
+    | empty
+    '''
+
+def p_FuncionB(t):
+    '''
+    FuncionB : COMMA FuncionA
+    | empty
+    '''
 
 import ply.yacc as yacc
 
