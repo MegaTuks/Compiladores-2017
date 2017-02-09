@@ -264,6 +264,93 @@ def p_ValorSalida(t):
     | LlamadaId
     '''
 
+#cuadro principal de expresion
+def p_Expresion(t):
+    '''
+      Expresion : Expresion ExpresionA
+      | Expres
+    '''
+
+#Llama auxiliar y la siguiente parte de la expresion
+def p_ExpressionA(t):
+    '''
+    ExpresionA : ExpresionAux Expres
+    '''
+
+#recibe los operadores And y Or
+def p_ExpresionAux(t):
+    '''
+    ExpresionAux : OPERADOR_AND_OR
+    '''
+
+#siguiente parte de expresion, corre otras jerarquias de expresion
+def p_Expres(t):
+    '''
+    Expres : Expres ExpresA
+    | Exp
+    '''
+
+#llama la auxiliar de expresion y un nivel mas abajo de expresion
+def p_ExpresA(t):
+    '''
+    ExpresA : ExpresAux Exp
+    '''
+
+#carga los operadores comparativos
+def p_ExpresAux(t):
+    '''
+    ExpresAux : OPERADOR_COMPARATIVO
+    '''
+
+
+#carga siguientes niveles de expresion
+def p_Exp(t):
+    '''
+    Exp : Exp ExpA
+    | Termino
+    '''
+#carga el siguiente nivel de expresion
+def p_ExpA(t):
+    '''
+    ExpA : ExpAux Termino
+    '''
+
+#carga los operadores de suma y resta
+def p_ExpAux(t):
+    '''
+    ExpAux : EXP_OPERADOR
+    '''
+
+#carga la siguientes partes de expresion
+def p_Termino(t):
+    '''
+    Termino : Termino TerminoA
+    | Factor
+    '''
+#siguiente nivel de expresion compara
+# el * e / y general el cuadruplo correcto
+def p_TerminoA(t):
+    '''
+    TerminoA : TerminoAux Factor
+    '''
+ 
+#inserta los terminos * y / en el stack de operadores
+def p_TerminoAux(t):
+    '''
+    TerminoAux : TERM_OPERADOR
+    '''
+
+#Factor es el valor "atmopico de una operacion, el caul es el resultaod de algo entre parentesis"
+# o de los elementos atomicos
+def p_Factor(t):
+    '''
+      Factor : ValorSalida
+      | PARENTESIS_IZQ Expresion PARENTESIS_DER
+    '''
+    ## parentesis para fondos falsos. 
+
+
+
 
 import ply.yacc as yacc
 
