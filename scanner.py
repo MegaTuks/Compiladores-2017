@@ -200,6 +200,35 @@ def p_Ciclo(t):
     Ciclo : KEYWORD_MIENTRAS PARENTESIS_IZQ Expresion PARENTESIS_DER Bloque
     '''
 
+
+def p_LlamadaId(t):
+	'''
+	LlamadaID : LlamadaFuncion
+	| Terminal
+	'''
+def p_Terminal(t):
+	'''
+	Terminal : IDENTIFICADOR TerminalA
+	'''
+
+def p_TerminalA(t):
+	'''
+	TerminalA : CORCHETE_IZQ Expresion CORCHETE_DER p_TerminalB
+	| empty
+	'''
+def p_TerminalB
+	'''
+	TerminalB : CORCHETE_IZQ Expresion CORCHETE_DER p_TerminalB
+	| empty
+	'''
+def p_Tipo
+	'''
+	Tipo : KEYWORD_TYPE_BOOLEANO
+	| KEYWORD_TYPE_ENTERO
+	| KEYWORD_TYPE_REAL
+	| KEYWORD_TYPE_CARACTERES
+	'''
+
 #cuadro principal de expresion
 def p_Expresion(t):
     '''
@@ -284,6 +313,8 @@ def p_Factor(t):
       | PARENTESIS_IZQ Expresion PARENTESIS_DER
     '''
     ## parentesis para fondos falsos. 
+
+
 
 
 
