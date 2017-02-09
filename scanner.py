@@ -3,11 +3,9 @@
 
 # List of token names.   This is always required
 tokens = [
-    'SEMICOLON', 'PUNTO',
-    'COMMA', 'COLON', 'BRACKET_IZQ', 'BRACKET_DER', 'PARENTESIS_IZQ', 'PARENTESIS_DER', 'CORCHETE_IZQ', 'CORCHETE_DER',
-    'OPERADOR_IGUAL', 'OPERADOR_COMPARATIVO', 'OPERADOR_AND_OR', 'EXP_OPERADOR', 'TERM_OPERADOR', 'IDENTIFICADOR',
-    'CONST_NUMERO_ENT',
-    'CONST_NUMERO_REAL', 'IDENTIFICADOR_CLASE', 'CONST_CARACTERES', 'CONST_BOOLEANO', 'INTER_IZQ', 'INTER_DER',
+    'SEMICOLON', 'PUNTO', 'COMA', 'COLON', 'BRACKET_IZQ', 'BRACKET_DER', 'PARENTESIS_IZQ', 'PARENTESIS_DER', 
+    'CORCHETE_IZQ', 'CORCHETE_DER', 'OPERADOR_IGUAL', 'OPERADOR_COMPARATIVO', 'OPERADOR_AND_OR', 'EXP_OPERADOR', 
+    'TERM_OPERADOR', 'IDENTIFICADOR', 'CONST_NUMERO_ENT', 'CONST_NUMERO_REAL', 'CONST_CARACTERES', 'CONST_BOOLEANO',
 ]
 
 reserved = {
@@ -34,7 +32,7 @@ tokens += reserved.values()
 # Tokens
 t_SEMICOLON = r'\;'
 t_PUNTO = r'[\.]'
-t_COMMA = r'[\,]'
+t_COMA = r'[\,]'
 t_COLON = r'\:'
 t_BRACKET_IZQ = r'\{'
 t_BRACKET_DER = r'\}'
@@ -63,13 +61,6 @@ def t_CONST_NUMERO_ENT(t):
 
 def t_IDENTIFICADOR(t):
     r'[a-z_][a-zA-Z0-9_]*'
-    if t.value in reserved:
-        t.type = reserved[t.value]
-    return t
-
-
-def t_IDENTIFICADOR_CLASE(t):
-    r'[A-Z][a-zA-Z0-9_]*'
     if t.value in reserved:
         t.type = reserved[t.value]
     return t
@@ -131,9 +122,84 @@ def p_FuncionA(t):
 
 def p_FuncionB(t):
     '''
-    FuncionB : COMMA FuncionA
+    FuncionB : COMA FuncionA
     | empty
     '''
+
+def p_Bloque(t):
+    '''
+    Bloque : BRACKET_IZQ BloqueA BRACKET_DER
+    '''
+
+def p_BloqueA(t):
+    '''
+    BloqueA : Declaracion BloqueA
+    | Asignacion BloqueA
+    | LlamadaIds BloqueA
+    | Ciclo BloqueA
+    | Condicion BloqueA
+    | Entrada BloqueA
+    | Salida BloqueA
+    | Cambio BloqueA
+    | KEYWORD_RETORNO ValorSalida
+    | empty
+    '''
+
+def p_Declaracion(t):
+    '''
+    Declaracion : Tipo IDENTIFICADOR DeclaracionA SEMICOLON
+    '''
+
+def p_DeclaracionA(t):
+    '''
+    DeclaracionA : CORCHETE_IZQ CONST_NUMERO_ENT CORCHETE_DER DeclaracionB
+    | empty
+    '''
+def p_DeclaracionB(t):
+    '''
+    DeclaracionB : CORCHETE_IZQ CONST_NUMERO_ENT CORCHETE_DER
+    | empty
+    '''
+
+def p_Asignacion(t):
+    '''
+    Asignacion : IDENTIFICADOR AsignacionA OPERADOR_IGUAL Expresion SEMICOLON
+    '''
+
+def p_AsignacionA(t):
+    '''
+    AsignacionA : CORCHETE_IZQ Expresion CORCHETE_DER AsignacionB
+    | empty
+    '''
+
+def p_AsignacionB(t):
+    '''
+    AsignacionB : CORCHETE_IZQ Expresion CORCHETE_DER
+    | empty
+    '''
+
+def p_LlamadaFuncion(t):
+    '''
+    LlamadaFuncion : IDENTIFICADOR PARENTESIS_IZQ LlamadaFuncionA PARENTESIS_DER
+    '''
+
+def p_LlamadaFuncionA(t):
+    '''
+    LlamadaFuncionA : Expresion LlamadaFuncionB
+    | empty
+    '''
+
+def p_LlamadaFuncionB(t):
+    '''
+    LlamadaFuncionB : COMA LlamadaFuncionA
+    | empty
+    '''
+
+def p_Ciclo(t):
+    '''
+    Ciclo : KEYWORD_MIENTRAS PARENTESIS_IZQ Expresion PARENTESIS_DER Bloque
+    '''
+
 
 import ply.yacc as yacc
 
