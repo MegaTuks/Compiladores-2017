@@ -5,7 +5,8 @@
 tokens = [
     'SEMICOLON', 'PUNTO', 'COMA', 'COLON', 'BRACKET_IZQ', 'BRACKET_DER', 'PARENTESIS_IZQ', 'PARENTESIS_DER', 
     'CORCHETE_IZQ', 'CORCHETE_DER', 'OPERADOR_IGUAL', 'OPERADOR_COMPARATIVO', 'OPERADOR_AND_OR', 'EXP_OPERADOR', 
-    'TERM_OPERADOR', 'IDENTIFICADOR', 'CONST_NUMERO_ENT', 'CONST_NUMERO_REAL', 'CONST_CARACTERES', 'CONST_BOOLEANO',
+    'TERM_OPERADOR', 'IDENTIFICADOR', 'CONST_NUMERO_ENT', 'CONST_NUMERO_REAL', 'CONST_CARACTERES', 'CONST_BOOLEANO', 
+    'KEYWORD_CAMBIO', 'KEYWORD_CASO', 'KEYWORD_ROMPE', 'KEYWORD_BASE'
 ]
 
 reserved = {
@@ -25,7 +26,11 @@ reserved = {
     'nulo': 'KEYWORD_NULO',
     'retorno': 'KEYWORD_RETORNO',
     'verdadero': 'KEYWORD_VERDADERO',
-    'falso': 'KEYWORD_FALSO'
+    'falso': 'KEYWORD_FALSO',
+    'cambio': 'KEYWORD_CAMBIO',
+    'caso': 'KEYWORD_CASO',
+    'rompe': 'KEYWORD_ROMPE',
+    'base': 'KEYWORD_BASE'
 }
 tokens += reserved.values()
 # Tokens
@@ -135,7 +140,7 @@ def p_BloqueA(t):
     '''
     BloqueA : Declaracion BloqueA
     | Asignacion BloqueA
-    | LlamadaIds BloqueA
+    | LlamadaId BloqueA
     | Ciclo BloqueA
     | Condicion BloqueA
     | Entrada BloqueA
@@ -200,7 +205,6 @@ def p_Ciclo(t):
     Ciclo : KEYWORD_MIENTRAS PARENTESIS_IZQ Expresion PARENTESIS_DER Bloque
     '''
 
-
 def p_LlamadaId(t):
 	'''
 	LlamadaID : LlamadaFuncion
@@ -228,6 +232,66 @@ def p_Tipo
 	| KEYWORD_TYPE_REAL
 	| KEYWORD_TYPE_CARACTERES
 	'''
+
+def p_Condicion(t):
+    '''
+    Condicion : KEYWORD_SI PARENTESIS_IZQ Expresion PARENTESIS_DER CondicionA
+    '''
+
+def p_CondicionA(t):
+    '''
+    CondicionA : Bloque
+    | KEYWORD_SINO Bloque
+    '''
+
+def p_Entrada(t):
+    '''
+    Entrada : KEYWORD_ENTRADA IDENTIFICADOR SEMICOLON
+    '''
+
+def p_EntradaA(t):
+    '''
+    EntradaA : CORCHETE_IZQ Expresion CORCHETE_DER EntradaB
+    | empty
+    '''
+
+def p_EntradaB(t):
+    '''
+    EntradaB : CORCHETE_IZQ Expresion CORCHETE_DER
+    | empty
+    '''
+
+def p_Salida(t):
+    '''
+    Salida : KEYWORD_SALIDA Expresion SEMICOLON
+    '''
+
+def p_Cambio(t):
+    '''
+    Cambio : KEYWORD_CAMBIO PARENTESIS_IZQ Expresion PARENTESIS_DER BRACKET_IZQ CambioA
+    '''
+
+def p_CambioA(t):
+    '''
+    CambioA : KEYWORD_CASO ValorSalida COLON Bloque KEYWORD_ROMPE SEMICOLON CambioA
+    | empty
+    '''
+
+def p_CambioB(t):
+    '''
+    CambioB : KEYWORD_BASE COLON Bloque BRACKET_DER
+    '''
+
+def p_ValorSalida(t):
+    '''
+    ValorSalida : CONST_NUMERO_ENT
+    | CONST_NUMERO_REAL
+    | CONST_CARACTERES
+    | CONST_BOOLEANO
+    | KEYWORD_NULO
+    | LlamadaId
+    '''
+
 
 #cuadro principal de expresion
 def p_Expresion(t):
