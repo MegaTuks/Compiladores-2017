@@ -1,0 +1,54 @@
+real pato;
+caracter yuya;
+real arceus;
+
+funcion entero perro (entero rojo, caracter chokis){
+  entero azul;
+  retorno azul + 4;
+}
+
+funcion entero nomalita(){
+
+  retorno 12 + 24;
+}
+
+funcion caracter gatito(){
+ caracter verde;
+ verde = "bebebe";
+ retorno verde;
+}
+
+
+principal ()
+{
+  entero num;
+  caracter popi[12];
+  entero shigure[5];
+  entero rep[5];
+  booleano rup[10];
+  booleano tubs;
+  real numo;
+  Sayajin gok;
+  Goku goten;
+  numo  = 2.5 * 3 + 8 / 2;
+  num = 10 + nomalita();
+  num =  num + (8+3)*7;
+  salida num;
+  caracter ruby;
+
+  num = num + 2;
+  ruby ="ME COMO MIS CHEETOOOS";
+
+  si(num < 100){
+    num = 1;
+  }
+
+  sino{
+    num = 2;
+  }
+
+  mientras(numo > (10.5 * 10 + 2 -4 / numo + (numo-10)  ) * 50 && num > 2){
+    numo = numo - 13;
+  }
+
+}

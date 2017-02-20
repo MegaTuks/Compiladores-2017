@@ -17,7 +17,7 @@ reserved = {
     'sino': 'KEYWORD_SINO',
     'mientras': 'KEYWORD_MIENTRAS',
     'caso':'KEYWORD_CASO',
-    'escenario':'KEYWORD_ESCENARIO'
+    'escenario':'KEYWORD_ESCENARIO',
     'principal': 'KEYWORD_PRINCIPAL',
     'caracter': 'KEYWORD_TYPE_CARACTERES',
     'entrada': 'KEYWORD_ENTRADA',
@@ -207,9 +207,10 @@ def p_Ciclo(t):
 
 def p_LlamadaId(t):
 	'''
-	LlamadaID : LlamadaFuncion
+	LlamadaId : LlamadaFuncion
 	| Terminal
 	'''
+
 def p_Terminal(t):
 	'''
 	Terminal : IDENTIFICADOR TerminalA
@@ -217,15 +218,15 @@ def p_Terminal(t):
 
 def p_TerminalA(t):
 	'''
-	TerminalA : CORCHETE_IZQ Expresion CORCHETE_DER p_TerminalB
+	TerminalA : CORCHETE_IZQ Expresion CORCHETE_DER TerminalB
 	| empty
 	'''
-def p_TerminalB
+def p_TerminalB(t):
 	'''
-	TerminalB : CORCHETE_IZQ Expresion CORCHETE_DER p_TerminalB
+	TerminalB : CORCHETE_IZQ Expresion CORCHETE_DER TerminalB
 	| empty
 	'''
-def p_Tipo
+def p_Tipo(t):
 	'''
 	Tipo : KEYWORD_TYPE_BOOLEANO
 	| KEYWORD_TYPE_ENTERO
@@ -385,12 +386,12 @@ def p_Factor(t):
 
 import ply.yacc as yacc
 
-#parser = yacc.yacc(start='Programa')
+parser = yacc.yacc(start='Programa')
 
-#fileload = input('Nombre del archivo de entrada: ')
+fileload = input('Nombre del archivo de entrada: ')
 
-#with open(fileload) as fileval:
-#  result = parser.parse(fileval.read())
-#  lexer.input(fileval.read())
+with open(fileload) as fileval:
+  result = parser.parse(fileval.read())
+  lexer.input(fileval.read())
 
-#print(result)
+print(result)
