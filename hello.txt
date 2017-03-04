@@ -28,8 +28,6 @@ principal ()
   booleano rup[10];
   booleano tubs;
   real numo;
-  Sayajin gok;
-  Goku goten;
   numo  = 2.5 * 3 + 8 / 2;
   num = 10 + nomalita();
   num =  num + (8+3)*7;
@@ -37,7 +35,7 @@ principal ()
   caracter ruby;
 
   num = num + 2;
-  ruby ="ME COMO MIS CHEETOOOS";
+  ruby = "ME COMO MIS CHEETOOOS" ;
 
   si(num < 100){
     num = 1;

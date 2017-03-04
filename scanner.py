@@ -50,7 +50,7 @@ t_OPERADOR_COMPARATIVO = r'[>]|[<]'
 t_OPERADOR_AND_OR = r'&&|\|\|'
 t_EXP_OPERADOR = r'\+|\-'
 t_TERM_OPERADOR = r'\*|\/'
-t_ignore = '\t\n\r'
+t_ignore = ' \t\n\r'
 
 def t_CONST_NUMERO_REAL(t):
     r'[0-9]+\.[0-9]+'
@@ -146,7 +146,7 @@ def p_BloqueA(t):
     | Entrada BloqueA
     | Salida BloqueA
     | Cambio BloqueA
-    | KEYWORD_RETORNO ValorSalida
+    | KEYWORD_RETORNO Expresion SEMICOLON
     | empty
     '''
 
@@ -238,12 +238,14 @@ def p_Condicion(t):
     '''
     Condicion : KEYWORD_SI PARENTESIS_IZQ Expresion PARENTESIS_DER CondicionA
     '''
+    print('entre a condicino')
 
 def p_CondicionA(t):
     '''
-    CondicionA : Bloque
-    | KEYWORD_SINO Bloque
+    CondicionA : Bloque KEYWORD_SINO Bloque
+    |  Bloque
     '''
+    print('entraste aqui?')
 
 def p_Entrada(t):
     '''
@@ -378,9 +380,6 @@ def p_Factor(t):
       | PARENTESIS_IZQ Expresion PARENTESIS_DER
     '''
     ## parentesis para fondos falsos. 
-
-
-
 
 
 
