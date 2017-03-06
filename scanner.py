@@ -1,14 +1,80 @@
 # Andres Marcelo Garza Cantu A00814236
 # Ruben Alejandro Hernandez Gonzalez A01175209
+# COMPILADORES 2017
+# COMPILADOR DE INPUT GRAFICO
 
-# List of token names.   This is always required
+# Tabla de simbolos
+class TablaSimbolos:
+    def __init__(self):
+        self.simbolos = dict()
+        self.hijos = list()
+        self.padre = None
+        # agregar atributo name?
+    #Funcion para insertar variable a la tabla
+    #@id es el identificador de la variable, tipo es un string que denota el tipo de variable que se almacena
+    def insertar(self, id, tipo):
+        self.simbolos[id] = tipo
+    
+    #funcion de busqueda, devuelve el tipo, de no existir devuelve none
+    def buscar(self, id):
+        return self.simbolos.get(id)
+
+     #funcion que anexa una tablasimbolos con otra
+     #@hijo es la tabla de simbolos que se le anexara como hijo a esta tabla
+    def agregarHijo(self, hijo):
+        self.hijos.append(hijo)
+
+    #funcion para indicar cual es la tabla padre de la variable.
+    #@pad es la tabla de simbolos padre    
+    def agregarPadre(self, pad):
+        self.padre = pad
+    # funcion para devolver el padre
+    # de no existir imprime no existe padre
+    #de lo contrario devuelve la tabla simbolos padre    
+    def devolverPadre(self):
+        if (self.padre is None):
+            print("no hay padre al cual ir");
+        else:
+            return self.padre
+    # funcion para devolver el hijo
+    # @name es el nombre de la tabla hijo a buscar
+    #devuelve hijo si encuentra uno.
+    def buscarHijos(self, name):
+        for hijo in self.hijos:
+            existe = hijo.buscar(name)
+            if (existe is not None):
+                return hijo
+
+                # def __str__(self):
+    #funcion que imprime los valores dentro de la tablaSimbolos
+    def imprimir(self):
+        i = 0
+        for hijo in self.hijos:
+            print("Hijo:",hijo.simbolos)
+        print ("tablaGlobal",self.simbolos)
+
+
+
+#Tabla que maneja las constantes
+#almacena la constante y su tipo.
+class TablaConstantes:
+    def __init__(self):
+        self.simbolos = dict()
+
+    def insertar(self, id, tipo):
+        self.simbolos[id] = tipo
+
+    def buscar(self, id):
+        return self.simbolos.get(id)
+
+#tokens relacionados con el programa
 tokens = [
     'SEMICOLON', 'PUNTO', 'COMA', 'COLON', 'BRACKET_IZQ', 'BRACKET_DER', 'PARENTESIS_IZQ', 'PARENTESIS_DER', 
     'CORCHETE_IZQ', 'CORCHETE_DER', 'OPERADOR_IGUAL', 'OPERADOR_COMPARATIVO', 'OPERADOR_AND_OR', 'EXP_OPERADOR', 
     'TERM_OPERADOR', 'IDENTIFICADOR', 'CONST_NUMERO_ENT', 'CONST_NUMERO_REAL', 'CONST_CARACTERES', 'CONST_BOOLEANO', 
     'KEYWORD_CAMBIO', 'KEYWORD_CASO', 'KEYWORD_ROMPE', 'KEYWORD_BASE'
 ]
-
+# Palabras Reservadas del compilador
 reserved = {
     'entero': 'KEYWORD_TYPE_ENTERO',
     'real': 'KEYWORD_TYPE_REAL',
@@ -33,8 +99,8 @@ reserved = {
     'base': 'KEYWORD_BASE'
 }
 tokens += reserved.values()
-# Tokens
-# Tokens
+
+# Tokens Utilizados
 t_SEMICOLON = r'\;'
 t_PUNTO = r'[\.]'
 t_COMA = r'[\,]'
@@ -52,32 +118,41 @@ t_EXP_OPERADOR = r'\+|\-'
 t_TERM_OPERADOR = r'\*|\/'
 t_ignore = ' \t\n\r'
 
+# VARIABLES DE COMPILACION
+#TABLAS DE SIMBOLOS
+tablaGlobal = TablaSimbolos()
+tablaSimbolosActual = tablaGlobal
+tablaConstantes = TablaConstantes()
+#FIN DE VARIABELS DE COMPILACION
+
+# Tipo numerico que acepta numeros reales 
 def t_CONST_NUMERO_REAL(t):
     r'[0-9]+\.[0-9]+'
     t.value = float(t.value)
     return t
 
-
+#tipo numerico que solo acepta numeros enteros
 def t_CONST_NUMERO_ENT(t):
     r'\d+'
     t.value = int(t.value)
     return t
 
-
+#Los identificadores deben necesariamente iniciar en minuscula.
 def t_IDENTIFICADOR(t):
     r'[a-z_][a-zA-Z0-9_]*'
     if t.value in reserved:
         t.type = reserved[t.value]
     return t
 
-
+#keyword falso o verdadero son los unicos variables aceptados para constantes booleanas
 def t_CONST_BOOLEANO(t):
     r'[KEYWORD_VERDADERO|KEYWORD_FALSO]'
     return t
 
-
+#string de caracteres iniciados con " y termina con "
 t_CONST_CARACTERES = r'\"[A-Za-z0-9_\(\)\{\}\[\]\<\>\!\ ]*\"'
 
+#funcion para imprimir errores lexicos
 def t_error(t):
     print("Caracter  Ilegal>>> '%s'  <<<<" % t.value[0])
     t.lexer.skip(1)
@@ -86,6 +161,7 @@ import ply.lex as lex
 
 lexer = lex.lex()
 
+#funcion para simular los vacios.
 def p_empty(p):
     'empty :'
     pass
@@ -116,14 +192,47 @@ def p_FuncionPrincipal(t):
 
 def p_Funcion(t):
     '''
-    Funcion : KEYWORD_FUNCION Tipo IDENTIFICADOR PARENTESIS_IZQ FuncionA PARENTESIS_DER Bloque
+    Funcion : FuncionAux PARENTESIS_IZQ FuncionA PARENTESIS_DER Bloque FinFuncion
     '''
+
+def p_FinFuncion(t):
+	'''
+	FinFuncion : 
+	'''
+	global tablaGlobal, tablaSimbolosActual
+	tablaSimbolosActual = tablaGlobal
+
+def p_FuncionAux(t):
+	'''
+	FuncionAux : KEYWORD_FUNCION Tipo IDENTIFICADOR
+	'''
+	global tablaSimbolosActual, tablaGlobal
+	funcion  = t[1]
+	tipo =  t[2]
+	identificador =  t[3]
+	tablaF = TablaSimbolos()
+	existe = tablaGlobal.buscar(t[3])
+	if(existe is None):
+		tablaSimbolosActual.insertar(identificador,funcion)
+		tablaF.insertar(identificador,tipo)
+		tablaSimbolosActual.agregarHijo(tablaF)
+		tablaF.agregarPadre(tablaSimbolosActual)
+		tablaSimbolosActual = tablaF
+	else:
+		print("funcion declarada previamente, o variable global comparte su nombre")
+		raise SyntaxError
+
+
 
 def p_FuncionA(t):
     '''
     FuncionA : Tipo IDENTIFICADOR FuncionB
     | empty
     '''
+    global tablaSimbolosActual, tablaGlobal
+    tipo = t[1]
+    identificador = t[2]
+    tablaSimbolosActual.insertar(identificador,tipo)
 
 def p_FuncionB(t):
     '''
@@ -154,17 +263,26 @@ def p_Declaracion(t):
     '''
     Declaracion : Tipo IDENTIFICADOR DeclaracionA SEMICOLON
     '''
+    
 
 def p_DeclaracionA(t):
     '''
-    DeclaracionA : CORCHETE_IZQ CONST_NUMERO_ENT CORCHETE_DER DeclaracionB
+    DeclaracionA : ArregloAux DeclaracionB
     | empty
     '''
+
+def ArregloAux(t):
+	'''
+	ArregloAux : CORCHETE_IZQ CONST_NUMERO_ENT CORCHETE_DER
+	'''
+	
+    
 def p_DeclaracionB(t):
     '''
-    DeclaracionB : CORCHETE_IZQ CONST_NUMERO_ENT CORCHETE_DER
+    DeclaracionB : ArregloAux
     | empty
     '''
+
 
 def p_Asignacion(t):
     '''
@@ -226,6 +344,7 @@ def p_TerminalB(t):
 	TerminalB : CORCHETE_IZQ Expresion CORCHETE_DER TerminalB
 	| empty
 	'''
+
 def p_Tipo(t):
 	'''
 	Tipo : KEYWORD_TYPE_BOOLEANO
@@ -233,6 +352,8 @@ def p_Tipo(t):
 	| KEYWORD_TYPE_REAL
 	| KEYWORD_TYPE_CARACTERES
 	'''
+	t[0] = t[1]
+
 
 def p_Condicion(t):
     '''
