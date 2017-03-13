@@ -67,6 +67,9 @@ class TablaConstantes:
     def buscar(self, id):
         return self.simbolos.get(id)
 
+    def imprimir(self):
+        print("Constantes:",self.simbolos)
+
 #tokens relacionados con el programa
 tokens = [
     'SEMICOLON', 'PUNTO', 'COMA', 'COLON', 'BRACKET_IZQ', 'BRACKET_DER', 'PARENTESIS_IZQ', 'PARENTESIS_DER', 
@@ -157,6 +160,15 @@ def t_error(t):
     print("Caracter  Ilegal>>> '%s'  <<<<" % t.value[0])
     t.lexer.skip(1)
 
+def insertaConstante(iden,tipo):
+    global tablaConstantes
+    constante = iden
+    existe = tablaConstantes.buscar(constante)
+    if (existe is None):
+        tablaConstantes.insertar(constante,tipo)
+    else:
+        print ("previamente insertada")
+
 import ply.lex as lex
 
 lexer = lex.lex()
@@ -174,6 +186,9 @@ def p_Programa(t):
     '''
       Programa : ProgramaA FuncionPrincipal
     '''
+    global tablaGlobal, tablaSimbolosActual, tablaConstantes
+    tablaSimbolosActual.imprimir()
+    tablaConstantes.imprimir()
 
 
 #diagrama de sintaxis de como funciona el programa , puedes ahcer declaraciones, Funciones o clases antes de entrar al main
@@ -187,8 +202,27 @@ def p_ProgramaA(t):
 #funcion que corre el programa principal , necesaria para correr nuestro lenguaje
 def p_FuncionPrincipal(t):
     '''
-    FuncionPrincipal : KEYWORD_PRINCIPAL PARENTESIS_IZQ PARENTESIS_DER Bloque
+    FuncionPrincipal : PrincipalAux PARENTESIS_IZQ PARENTESIS_DER Bloque FinPrincipal
     '''
+def p_FinPrincipal(t):
+    '''
+    FinPrincipal : 
+    '''
+    global tablaSimbolosActual, tablaGlobal
+    tablaSimbolosActual =  tablaGlobal
+def p_PrincipalAux(t):
+    '''
+    PrincipalAux : KEYWORD_PRINCIPAL
+    '''
+    global tablaSimbolosActual
+    identificador = t[1]
+    tablaF = TablaSimbolos()
+    tablaSimbolosActual.insertar(identificador,"funcionPrincipal")
+    tablaF.insertar(identificador,"principal")
+    tablaSimbolosActual.agregarHijo(tablaF)
+    tablaF.agregarPadre(tablaSimbolosActual)
+    tablaSimbolosActual = tablaF  
+
 
 def p_Funcion(t):
     '''
@@ -196,31 +230,31 @@ def p_Funcion(t):
     '''
 
 def p_FinFuncion(t):
-	'''
-	FinFuncion : 
-	'''
-	global tablaGlobal, tablaSimbolosActual
-	tablaSimbolosActual = tablaGlobal
+    '''
+    FinFuncion : 
+    '''
+    global tablaGlobal, tablaSimbolosActual
+    tablaSimbolosActual = tablaGlobal
 
 def p_FuncionAux(t):
-	'''
-	FuncionAux : KEYWORD_FUNCION Tipo IDENTIFICADOR
-	'''
-	global tablaSimbolosActual, tablaGlobal
-	funcion  = t[1]
-	tipo =  t[2]
-	identificador =  t[3]
-	tablaF = TablaSimbolos()
-	existe = tablaGlobal.buscar(t[3])
-	if(existe is None):
-		tablaSimbolosActual.insertar(identificador,funcion)
-		tablaF.insertar(identificador,tipo)
-		tablaSimbolosActual.agregarHijo(tablaF)
-		tablaF.agregarPadre(tablaSimbolosActual)
-		tablaSimbolosActual = tablaF
-	else:
-		print("funcion declarada previamente, o variable global comparte su nombre")
-		raise SyntaxError
+    '''
+    FuncionAux : KEYWORD_FUNCION Tipo IDENTIFICADOR
+    '''
+    global tablaSimbolosActual, tablaGlobal
+    funcion  = t[1]
+    tipo =  t[2]
+    identificador =  t[3]
+    tablaF = TablaSimbolos()
+    existe = tablaGlobal.buscar(t[3])
+    if(existe is None):
+        tablaSimbolosActual.insertar(identificador,funcion)
+        tablaF.insertar(identificador,tipo)
+        tablaSimbolosActual.agregarHijo(tablaF)
+        tablaF.agregarPadre(tablaSimbolosActual)
+        tablaSimbolosActual = tablaF
+    else:
+        print("funcion declarada previamente, o variable global comparte su nombre")
+        raise SyntaxError
 
 
 
@@ -230,9 +264,16 @@ def p_FuncionA(t):
     | empty
     '''
     global tablaSimbolosActual, tablaGlobal
-    tipo = t[1]
-    identificador = t[2]
-    tablaSimbolosActual.insertar(identificador,tipo)
+    if(len(t) == 4):
+        tipo = t[1]
+        identificador = t[2]
+        existe = tablaSimbolosActual.buscar(identificador)
+        if(existe is None):
+            tablaSimbolosActual.insertar(identificador, tipo)
+        else:
+            print("parametro declarado previamente, o variable global comparte su nombre")
+            raise SyntaxError
+
 
 def p_FuncionB(t):
     '''
@@ -263,6 +304,20 @@ def p_Declaracion(t):
     '''
     Declaracion : Tipo IDENTIFICADOR DeclaracionA SEMICOLON
     '''
+    global tablaSimbolosActual, tablaGlobal
+    tipo = t[1]
+    identificador = t[2]
+    existe = tablaSimbolosActual.buscar(identificador)
+    existeArreglos = t[3]
+    if(existe is None):
+        if (t[3] is  None):
+            tablaSimbolosActual.insertar(identificador, tipo)
+        else:
+            #si es matriz AQUI se corren funciones de matriz
+            tablaSimbolosActual.insertar(identificador, tipo)
+    else:
+        print("Variable declarada previamente, o variable global comparte su nombre")
+        raise SyntaxError
     
 
 def p_DeclaracionA(t):
@@ -270,24 +325,37 @@ def p_DeclaracionA(t):
     DeclaracionA : ArregloAux DeclaracionB
     | empty
     '''
+    if(len(t) == 2):
+        print("tiene dimension")
+        #t[0] = {'arreglo':t[1],'matriz':t[2] }
 
-def ArregloAux(t):
-	'''
-	ArregloAux : CORCHETE_IZQ CONST_NUMERO_ENT CORCHETE_DER
-	'''
-	
+def p_ArregloAux(t):
+    '''
+    ArregloAux : CORCHETE_IZQ CONST_NUMERO_ENT CORCHETE_DER
+    '''
+    t[0] = {'casillas': t[2]}
     
 def p_DeclaracionB(t):
     '''
     DeclaracionB : ArregloAux
     | empty
     '''
+    t[0] = t[1]
 
 
 def p_Asignacion(t):
     '''
     Asignacion : IDENTIFICADOR AsignacionA OPERADOR_IGUAL Expresion SEMICOLON
     '''
+    global tablaSimbolosActual,tablaGlobal
+    identificador = t[1]
+    existe = tablaSimbolosActual.buscar(identificador)
+    existeGlobal = tablaGlobal.buscar(identificador)
+    if(existe is  None):
+        if(existeGlobal is  None):
+            print("VARIABLE no declarada previamente")
+            raise SyntaxError
+
 
 def p_AsignacionA(t):
     '''
@@ -303,8 +371,19 @@ def p_AsignacionB(t):
 
 def p_LlamadaFuncion(t):
     '''
-    LlamadaFuncion : IDENTIFICADOR PARENTESIS_IZQ LlamadaFuncionA PARENTESIS_DER
+    LlamadaFuncion : LlamadaAux PARENTESIS_IZQ LlamadaFuncionA PARENTESIS_DER
     '''
+
+def p_LlamadaAux(t):
+    '''
+    LlamadaAux : IDENTIFICADOR
+    '''
+    global tablaGlobal
+    identificador = t[1]
+    existe = tablaGlobal.buscar(t[1])
+    if(existe is None):
+        print("Funcion no declarada")
+        raise SyntaxError
 
 def p_LlamadaFuncionA(t):
     '''
@@ -324,49 +403,59 @@ def p_Ciclo(t):
     '''
 
 def p_LlamadaId(t):
-	'''
-	LlamadaId : LlamadaFuncion
-	| Terminal
-	'''
+    '''
+    LlamadaId : LlamadaFuncion
+    | Terminal
+    '''
+    #funcion a checar
 
 def p_Terminal(t):
-	'''
-	Terminal : IDENTIFICADOR TerminalA
-	'''
+    '''
+    Terminal : IDENTIFICADOR TerminalA
+    '''
+    identificador = t[1]
+    global tablaSimbolosActual,tablaGlobal
+    existe = tablaSimbolosActual.buscar(identificador)
+    existeGlobal = tablaGlobal.buscar(identificador)
+    if (existe is None):
+        if(existeGlobal is None):
+            print("variable no declarada")
+            raise SyntaxError
+    #funcion a checar
 
 def p_TerminalA(t):
-	'''
-	TerminalA : CORCHETE_IZQ Expresion CORCHETE_DER TerminalB
-	| empty
-	'''
+    '''
+    TerminalA : CORCHETE_IZQ Expresion CORCHETE_DER TerminalB
+    | empty
+    '''
 def p_TerminalB(t):
-	'''
-	TerminalB : CORCHETE_IZQ Expresion CORCHETE_DER TerminalB
-	| empty
-	'''
+    '''
+    TerminalB : CORCHETE_IZQ Expresion CORCHETE_DER TerminalB
+    | empty
+    '''
 
 def p_Tipo(t):
-	'''
-	Tipo : KEYWORD_TYPE_BOOLEANO
-	| KEYWORD_TYPE_ENTERO
-	| KEYWORD_TYPE_REAL
-	| KEYWORD_TYPE_CARACTERES
-	'''
-	t[0] = t[1]
+    '''
+    Tipo : KEYWORD_TYPE_BOOLEANO
+    | KEYWORD_TYPE_ENTERO
+    | KEYWORD_TYPE_REAL
+    | KEYWORD_TYPE_CARACTERES
+    '''
+    t[0] = t[1]
 
 
 def p_Condicion(t):
     '''
     Condicion : KEYWORD_SI PARENTESIS_IZQ Expresion PARENTESIS_DER CondicionA
     '''
-    print('entre a condicino')
+    print('entre a condicion')
 
 def p_CondicionA(t):
     '''
     CondicionA : Bloque KEYWORD_SINO Bloque
     |  Bloque
     '''
-    print('entraste aqui?')
+    print('entraste CondicionA?')
 
 def p_Entrada(t):
     '''
@@ -408,14 +497,38 @@ def p_CambioB(t):
 
 def p_ValorSalida(t):
     '''
-    ValorSalida : CONST_NUMERO_ENT
-    | CONST_NUMERO_REAL
-    | CONST_CARACTERES
-    | CONST_BOOLEANO
+    ValorSalida : ValorEnt
+    | ValorReal
+    | ValorCar
+    | ValorBool
     | KEYWORD_NULO
     | LlamadaId
     '''
+    #funcion a checar
+def p_ValorEnt(t):
+    '''
+    ValorEnt : CONST_NUMERO_ENT
+    '''
+    insertaConstante(t[1],"entero")
+        
 
+def p_ValorReal(t):
+    '''
+    ValorReal : CONST_NUMERO_REAL
+    '''
+    insertaConstante(t[1],"real")
+
+def p_ValorCar(t):
+    '''
+    ValorCar : CONST_CARACTERES
+    '''
+    insertaConstante(t[1],"caracter")
+
+def p_ValorBool(t):
+    '''
+    ValorBool : CONST_BOOLEANO
+    '''
+    insertaConstante(t[1],"booleano")
 
 #cuadro principal de expresion
 def p_Expresion(t):
