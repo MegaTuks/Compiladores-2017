@@ -2,6 +2,7 @@
 # Ruben Alejandro Hernandez Gonzalez A01175209
 # COMPILADORES 2017
 # COMPILADOR DE INPUT GRAFICO
+from tablas import *
 
 # Tabla de simbolos
 class TablaSimbolos:
@@ -126,6 +127,10 @@ t_ignore = ' \t\n\r'
 tablaGlobal = TablaSimbolos()
 tablaSimbolosActual = tablaGlobal
 tablaConstantes = TablaConstantes()
+stackOperador = []  # se usa para guardar los operadores del momento
+stackOperando = []  # se usa para guardar las ,variables, constantes, temporales;
+
+checkSemantica = claseCuboSemantico()
 #FIN DE VARIABELS DE COMPILACION
 
 # Tipo numerico que acepta numeros reales 
@@ -542,12 +547,23 @@ def p_ExpressionA(t):
     '''
     ExpresionA : ExpresionAux Expres
     '''
+    global checkSemantica, stackOperador, stackOperando
+    top = stackOperador[len(stackOperador) - 1]
+    print("OPERADORES HASTA EL MOMENTO AND OR", stackOperador)
+    if (top == '&&' or top == '||'):
+        temporales[indicetemporales] = "temporalExpresion"
+        op = stackOperador.pop()
+        oper2 = stackOperando.pop()
+        oper1 = stackOperando.pop()
+        sem = checkSemantica.Semantica(op,oper1, oper2)
 
 #recibe los operadores And y Or
 def p_ExpresionAux(t):
     '''
     ExpresionAux : OPERADOR_AND_OR
     '''
+    global stackOperador
+    stackOperador.append(t[1])
 
 #siguiente parte de expresion, corre otras jerarquias de expresion
 def p_Expres(t):
@@ -561,12 +577,24 @@ def p_ExpresA(t):
     '''
     ExpresA : ExpresAux Exp
     '''
+    global checkSemantica, stackOperador, stackOperando
+    top = stackOperador[len(stackOperador) - 1]
+    print("OPERADORES HASTA EL MOMENTO COMPARATIVO", stackOperador)
+    if (top == '<' or top == '>'):
+        temporales[indicetemporales] = "temporalExpres"
+        op = stackOperador.pop()
+        oper2 = stackOperando.pop()
+        oper1 = stackOperando.pop()
+        sem = checkSemantica.Semantica(op,oper1, oper2)
+
 
 #carga los operadores comparativos
 def p_ExpresAux(t):
     '''
     ExpresAux : OPERADOR_COMPARATIVO
     '''
+    global stackOperador
+    stackOperador.append(t[1])
 
 
 #carga siguientes niveles de expresion
@@ -580,12 +608,24 @@ def p_ExpA(t):
     '''
     ExpA : ExpAux Termino
     '''
+    global checkSemantica, stackOperador, stackOperando
+    top = stackOperador[len(stackOperador) - 1]
+    print("OPERADORES HASTA EL MOMENTO + -", stackOperador)
+    if (top == '+' or top == '-'):
+        temporales[indicetemporales] = "temporalExp"
+        op = stackOperador.pop()
+        oper2 = stackOperando.pop()
+        oper1 = stackOperando.pop()
+        memID = 0
+        sem = checkSemantica.Semantica(op,oper1, oper2)
 
 #carga los operadores de suma y resta
 def p_ExpAux(t):
     '''
     ExpAux : EXP_OPERADOR
     '''
+    global stackOperador
+    stackOperador.append(t[1])
 
 #carga la siguientes partes de expresion
 def p_Termino(t):
@@ -599,12 +639,23 @@ def p_TerminoA(t):
     '''
     TerminoA : TerminoAux Factor
     '''
+    global checkSemantica, stackOperador, stackOperando
+    top = stackOperador[len(stackOperador) - 1]
+    print("OPERADORES HASTA EL MOMENTO * /", stackOperador)
+    if (top == '*' or top == '/'):
+        temporales[indicetemporales] = "temporalTermino"
+        op = stackOperador.pop()
+        oper2 = stackOperando.pop()
+        oper1 = stackOperando.pop()
+        sem = checkSemantica.Semantica(op,oper1, oper2)
  
 #inserta los terminos * y / en el stack de operadores
 def p_TerminoAux(t):
     '''
     TerminoAux : TERM_OPERADOR
     '''
+    global stackOperador
+    stackOperador.append(t[1])
 
 #Factor es el valor "atmopico de una operacion, el caul es el resultaod de algo entre parentesis"
 # o de los elementos atomicos
