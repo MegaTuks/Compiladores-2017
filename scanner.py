@@ -75,8 +75,7 @@ class TablaConstantes:
 tokens = [
     'SEMICOLON', 'PUNTO', 'COMA', 'COLON', 'BRACKET_IZQ', 'BRACKET_DER', 'PARENTESIS_IZQ', 'PARENTESIS_DER', 
     'CORCHETE_IZQ', 'CORCHETE_DER', 'OPERADOR_IGUAL', 'OPERADOR_COMPARATIVO', 'OPERADOR_AND_OR', 'EXP_OPERADOR', 
-    'TERM_OPERADOR', 'IDENTIFICADOR', 'CONST_NUMERO_ENT', 'CONST_NUMERO_REAL', 'CONST_CARACTERES', 'CONST_BOOLEANO', 
-    'KEYWORD_CAMBIO', 'KEYWORD_CASO', 'KEYWORD_ROMPE', 'KEYWORD_BASE'
+    'TERM_OPERADOR', 'IDENTIFICADOR', 'CONST_NUMERO_ENT', 'CONST_NUMERO_REAL', 'CONST_CARACTERES', 'CONST_BOOLEANO',    
 ]
 # Palabras Reservadas del compilador
 reserved = {
@@ -129,7 +128,9 @@ tablaSimbolosActual = tablaGlobal
 tablaConstantes = TablaConstantes()
 stackOperador = []  # se usa para guardar los operadores del momento
 stackOperando = []  # se usa para guardar las ,variables, constantes, temporales;
-
+temporales = [] #tabla de valores temporales. 
+temporales.append(None)
+indicetemporales = 0 #indice de las variables temporales.
 checkSemantica = claseCuboSemantico()
 #FIN DE VARIABELS DE COMPILACION
 
@@ -514,26 +515,58 @@ def p_ValorEnt(t):
     '''
     ValorEnt : CONST_NUMERO_ENT
     '''
-    insertaConstante(t[1],"entero")
+    global tablaConstantes,stackOperando
+    existe = None
+    existe = tablaConstantes.buscar(t[1])
+    if (existe is None):
+        #memID = listaMemorias[2].insertaBooleano()
+        insertaConstante(t[1],"entero")
+        stackOperando.append(t[1])
+    else:
+        stackOperando.append(t[1])
         
 
 def p_ValorReal(t):
     '''
     ValorReal : CONST_NUMERO_REAL
     '''
-    insertaConstante(t[1],"real")
+    global tablaConstantes,stackOperando
+    existe = None
+    existe = tablaConstantes.buscar(t[1])
+    if (existe is None):
+        #memID = listaMemorias[2].insertaBooleano()
+        insertaConstante(t[1],"real")
+        stackOperando.append(t[1])
+    else:
+        stackOperando.append(t[1])
 
 def p_ValorCar(t):
     '''
     ValorCar : CONST_CARACTERES
     '''
-    insertaConstante(t[1],"caracter")
+    global tablaConstantes,stackOperando
+    existe = None
+    existe = tablaConstantes.buscar(t[1])
+    if (existe is None):
+        #memID = listaMemorias[2].insertaBooleano()
+        insertaConstante(t[1],"caracter")
+        stackOperando.append(t[1])
+    else:
+        stackOperando.append(t[1])
 
 def p_ValorBool(t):
     '''
     ValorBool : CONST_BOOLEANO
     '''
-    insertaConstante(t[1],"booleano")
+    global tablaConstantes,stackOperando
+    existe = None
+    existe = tablaConstantes.buscar(t[1])
+    if (existe is None):
+        #memID = listaMemorias[2].insertaBooleano()
+        insertaConstante(t[1],"booleano")
+        stackOperando.append(t[1])
+    else:
+        stackOperando.append(t[1])
 
 #cuadro principal de expresion
 def p_Expresion(t):
@@ -547,7 +580,7 @@ def p_ExpressionA(t):
     '''
     ExpresionA : ExpresionAux Expres
     '''
-    global checkSemantica, stackOperador, stackOperando
+    global checkSemantica, stackOperador, stackOperando,temporales,indicetemporales
     top = stackOperador[len(stackOperador) - 1]
     print("OPERADORES HASTA EL MOMENTO AND OR", stackOperador)
     if (top == '&&' or top == '||'):
@@ -555,7 +588,11 @@ def p_ExpressionA(t):
         op = stackOperador.pop()
         oper2 = stackOperando.pop()
         oper1 = stackOperando.pop()
-        sem = checkSemantica.Semantica(op,oper1, oper2)
+        result = 't' + str(indicetemporales)
+        temporales.append(result)
+        stackOperando.append(result)
+        indicetemporales = indicetemporales + 1
+        #sem = checkSemantica.Semantica(op,oper1, oper2)
 
 #recibe los operadores And y Or
 def p_ExpresionAux(t):
@@ -577,15 +614,19 @@ def p_ExpresA(t):
     '''
     ExpresA : ExpresAux Exp
     '''
-    global checkSemantica, stackOperador, stackOperando
+    global checkSemantica, stackOperador, stackOperando, temporales,indicetemporales
     top = stackOperador[len(stackOperador) - 1]
     print("OPERADORES HASTA EL MOMENTO COMPARATIVO", stackOperador)
     if (top == '<' or top == '>'):
         temporales[indicetemporales] = "temporalExpres"
         op = stackOperador.pop()
         oper2 = stackOperando.pop()
-        oper1 = stackOperando.pop()
-        sem = checkSemantica.Semantica(op,oper1, oper2)
+        oper1 = stackOperando.pop
+        result = 't' + str(indicetemporales)
+        temporales.append(result)
+        stackOperando.append(result)
+        indicetemporales = indicetemporales + 1        
+        #sem = checkSemantica.Semantica(op,oper1, oper2)
 
 
 #carga los operadores comparativos
@@ -608,7 +649,7 @@ def p_ExpA(t):
     '''
     ExpA : ExpAux Termino
     '''
-    global checkSemantica, stackOperador, stackOperando
+    global checkSemantica, stackOperador, stackOperando, temporales, indicetemporales
     top = stackOperador[len(stackOperador) - 1]
     print("OPERADORES HASTA EL MOMENTO + -", stackOperador)
     if (top == '+' or top == '-'):
@@ -617,7 +658,11 @@ def p_ExpA(t):
         oper2 = stackOperando.pop()
         oper1 = stackOperando.pop()
         memID = 0
-        sem = checkSemantica.Semantica(op,oper1, oper2)
+        result = 't' + str(indicetemporales)
+        temporales.append(result)
+        stackOperando.append(result)
+        indicetemporales = indicetemporales + 1
+        #sem = checkSemantica.Semantica(op,oper1, oper2)
 
 #carga los operadores de suma y resta
 def p_ExpAux(t):
@@ -639,7 +684,7 @@ def p_TerminoA(t):
     '''
     TerminoA : TerminoAux Factor
     '''
-    global checkSemantica, stackOperador, stackOperando
+    global checkSemantica, stackOperador, stackOperando,temporales,indicetemporales
     top = stackOperador[len(stackOperador) - 1]
     print("OPERADORES HASTA EL MOMENTO * /", stackOperador)
     if (top == '*' or top == '/'):
@@ -647,7 +692,11 @@ def p_TerminoA(t):
         op = stackOperador.pop()
         oper2 = stackOperando.pop()
         oper1 = stackOperando.pop()
-        sem = checkSemantica.Semantica(op,oper1, oper2)
+        result = 't' + str(indicetemporales)
+        temporales.append(result)
+        stackOperando.append(result)
+        indicetemporales = indicetemporales + 1
+        #sem = checkSemantica.Semantica(op,oper1, oper2)
  
 #inserta los terminos * y / en el stack de operadores
 def p_TerminoAux(t):
