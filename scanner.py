@@ -3,73 +3,7 @@
 # COMPILADORES 2017
 # COMPILADOR DE INPUT GRAFICO
 from tablas import *
-
-# Tabla de simbolos
-class TablaSimbolos:
-    def __init__(self):
-        self.simbolos = dict()
-        self.hijos = list()
-        self.padre = None
-        # agregar atributo name?
-    #Funcion para insertar variable a la tabla
-    #@id es el identificador de la variable, tipo es un string que denota el tipo de variable que se almacena
-    def insertar(self, id, tipo):
-        self.simbolos[id] = tipo
-    
-    #funcion de busqueda, devuelve el tipo, de no existir devuelve none
-    def buscar(self, id):
-        return self.simbolos.get(id)
-
-     #funcion que anexa una tablasimbolos con otra
-     #@hijo es la tabla de simbolos que se le anexara como hijo a esta tabla
-    def agregarHijo(self, hijo):
-        self.hijos.append(hijo)
-
-    #funcion para indicar cual es la tabla padre de la variable.
-    #@pad es la tabla de simbolos padre    
-    def agregarPadre(self, pad):
-        self.padre = pad
-    # funcion para devolver el padre
-    # de no existir imprime no existe padre
-    #de lo contrario devuelve la tabla simbolos padre    
-    def devolverPadre(self):
-        if (self.padre is None):
-            print("no hay padre al cual ir");
-        else:
-            return self.padre
-    # funcion para devolver el hijo
-    # @name es el nombre de la tabla hijo a buscar
-    #devuelve hijo si encuentra uno.
-    def buscarHijos(self, name):
-        for hijo in self.hijos:
-            existe = hijo.buscar(name)
-            if (existe is not None):
-                return hijo
-
-                # def __str__(self):
-    #funcion que imprime los valores dentro de la tablaSimbolos
-    def imprimir(self):
-        i = 0
-        for hijo in self.hijos:
-            print("Hijo:",hijo.simbolos)
-        print ("tablaGlobal",self.simbolos)
-
-
-
-#Tabla que maneja las constantes
-#almacena la constante y su tipo.
-class TablaConstantes:
-    def __init__(self):
-        self.simbolos = dict()
-
-    def insertar(self, id, tipo):
-        self.simbolos[id] = tipo
-
-    def buscar(self, id):
-        return self.simbolos.get(id)
-
-    def imprimir(self):
-        print("Constantes:",self.simbolos)
+import sys
 
 #tokens relacionados con el programa
 tokens = [
@@ -128,10 +62,12 @@ tablaSimbolosActual = tablaGlobal
 tablaConstantes = TablaConstantes()
 stackOperador = []  # se usa para guardar los operadores del momento
 stackOperando = []  # se usa para guardar las ,variables, constantes, temporales;
+stackSaltos = [] # stack saltos para guardar los saltos de GOTOF
 temporales = [] #tabla de valores temporales. 
 temporales.append(None)
 indicetemporales = 0 #indice de las variables temporales.
 checkSemantica = claseCuboSemantico()
+cuadruplo = Cuadruplos()
 #FIN DE VARIABELS DE COMPILACION
 
 # Tipo numerico que acepta numeros reales 
@@ -155,7 +91,7 @@ def t_IDENTIFICADOR(t):
 
 #keyword falso o verdadero son los unicos variables aceptados para constantes booleanas
 def t_CONST_BOOLEANO(t):
-    r'[KEYWORD_VERDADERO|KEYWORD_FALSO]'
+    r'[KEYWORD_VERDADERO | KEYWORD_FALSO]'
     return t
 
 #string de caracteres iniciados con " y termina con "
@@ -192,9 +128,10 @@ def p_Programa(t):
     '''
       Programa : ProgramaA FuncionPrincipal
     '''
-    global tablaGlobal, tablaSimbolosActual, tablaConstantes
+    global tablaGlobal, tablaSimbolosActual, tablaConstantes,cuadruplo
     tablaSimbolosActual.imprimir()
     tablaConstantes.imprimir()
+    cuadruplo.imprimir()
 
 
 #diagrama de sintaxis de como funciona el programa , puedes ahcer declaraciones, Funciones o clases antes de entrar al main
@@ -260,7 +197,7 @@ def p_FuncionAux(t):
         tablaSimbolosActual = tablaF
     else:
         print("funcion declarada previamente, o variable global comparte su nombre")
-        raise SyntaxError
+        raise SystemExit
 
 
 
@@ -278,7 +215,7 @@ def p_FuncionA(t):
             tablaSimbolosActual.insertar(identificador, tipo)
         else:
             print("parametro declarado previamente, o variable global comparte su nombre")
-            raise SyntaxError
+            raise SystemExit
 
 
 def p_FuncionB(t):
@@ -302,9 +239,18 @@ def p_BloqueA(t):
     | Entrada BloqueA
     | Salida BloqueA
     | Cambio BloqueA
-    | KEYWORD_RETORNO Expresion SEMICOLON
+    | RetornoAux
     | empty
     '''
+
+def p_RetornoAux(t):
+    '''
+    RetornoAux : KEYWORD_RETORNO Expresion SEMICOLON
+    '''
+    global cuadruplo, stackOperando
+    op = stackOperando.pop()
+    retorno =  t[1]
+    cuadruplo.normalCuad('ret',None,None,op)
 
 def p_Declaracion(t):
     '''
@@ -323,7 +269,7 @@ def p_Declaracion(t):
             tablaSimbolosActual.insertar(identificador, tipo)
     else:
         print("Variable declarada previamente, o variable global comparte su nombre")
-        raise SyntaxError
+        raise SystemExit
     
 
 def p_DeclaracionA(t):
@@ -353,15 +299,17 @@ def p_Asignacion(t):
     '''
     Asignacion : IDENTIFICADOR AsignacionA OPERADOR_IGUAL Expresion SEMICOLON
     '''
-    global tablaSimbolosActual,tablaGlobal
+    global tablaSimbolosActual,tablaGlobal,cuadruplo,stackOperando
     identificador = t[1]
     existe = tablaSimbolosActual.buscar(identificador)
     existeGlobal = tablaGlobal.buscar(identificador)
     if(existe is  None):
         if(existeGlobal is  None):
-            print("VARIABLE no declarada previamente")
-            raise SyntaxError
-
+            print("VARIABLE no declarada previamente") 
+            raise SystemExit
+    else:
+        op1 = stackOperando.pop()
+        cuadruplo.normalCuad('=',op1,None,identificador)
 
 def p_AsignacionA(t):
     '''
@@ -389,7 +337,7 @@ def p_LlamadaAux(t):
     existe = tablaGlobal.buscar(t[1])
     if(existe is None):
         print("Funcion no declarada")
-        raise SyntaxError
+        raise SystemExit
 
 def p_LlamadaFuncionA(t):
     '''
@@ -420,13 +368,18 @@ def p_Terminal(t):
     Terminal : IDENTIFICADOR TerminalA
     '''
     identificador = t[1]
-    global tablaSimbolosActual,tablaGlobal
+    global tablaSimbolosActual,tablaGlobal,stackOperando
     existe = tablaSimbolosActual.buscar(identificador)
     existeGlobal = tablaGlobal.buscar(identificador)
     if (existe is None):
         if(existeGlobal is None):
             print("variable no declarada")
-            raise SyntaxError
+            raise SystemExit
+        else:
+            stackOperando.append(identificador)
+    else:
+        stackOperando.append(identificador)
+
     #funcion a checar
 
 def p_TerminalA(t):
@@ -452,16 +405,57 @@ def p_Tipo(t):
 
 def p_Condicion(t):
     '''
-    Condicion : KEYWORD_SI PARENTESIS_IZQ Expresion PARENTESIS_DER CondicionA
+    Condicion : CondicionSi CondicionA
     '''
     print('entre a condicion')
 
+def p_CondicionSi(t):
+    '''
+    CondicionSi : KEYWORD_SI PARENTESIS_IZQ Expresion PARENTESIS_DER
+    '''
+    global cuadruplo, stackOperando,stackSaltos
+    #print("Cuadruplo Indice: ",cuadruplo.CuadIndex())
+    op = stackOperando.pop()
+    cuadruplo.normalCuad("GOTOF",op,None,None)
+    salto = cuadruplo.CuadIndex()
+    stackSaltos.append(salto)
+    print("CondicionSi")
+
 def p_CondicionA(t):
     '''
-    CondicionA : Bloque KEYWORD_SINO Bloque
+    CondicionA : Bloque CondicionSino
     |  Bloque
     '''
     print('entraste CondicionA?')
+    global cuadruplo,stackOperando,stackSaltos
+    indice = stackSaltos.pop()
+    salto = cuadruplo.CuadIndex() + 1
+    cuadruplo.InsertarSalto(indice,salto)
+
+def p_SaltoBloque(t):
+    '''
+    '''
+
+def p_CondicionSino(t):
+    '''
+    CondicionSino : KEYWORD_SINO Bloque FinSino
+    '''
+    global cuadruplo, stackOperando,stackSaltos
+    #print("Cuadruplo Indice: ",cuadruplo.CuadIndex())
+    op = stackOperando.pop()
+    cuadruplo.normalCuad("GOTO",None,None,None)
+    salto = cuadruplo.CuadIndex()
+    stackSaltos.append(salto)
+
+def p_FinSino(t):
+    '''
+    FinSino :
+    '''
+    global cuadruplo,stackOperando,stackSaltos
+    indice = stackSaltos.pop()
+    salto = cuadruplo.CuadIndex() + 1
+    cuadruplo.InsertarSalto(indice,salto)
+
 
 def p_Entrada(t):
     '''
@@ -572,7 +566,7 @@ def p_ValorBool(t):
 def p_Expresion(t):
     '''
       Expresion : Expresion ExpresionA
-      | Expres
+      | Expres 
     '''
 
 #Llama auxiliar y la siguiente parte de la expresion
@@ -580,7 +574,7 @@ def p_ExpressionA(t):
     '''
     ExpresionA : ExpresionAux Expres
     '''
-    global checkSemantica, stackOperador, stackOperando,temporales,indicetemporales
+    global checkSemantica, stackOperador, stackOperando,temporales,indicetemporales,cuadruplo
     top = stackOperador[len(stackOperador) - 1]
     print("OPERADORES HASTA EL MOMENTO AND OR", stackOperador)
     if (top == '&&' or top == '||'):
@@ -593,6 +587,11 @@ def p_ExpressionA(t):
         stackOperando.append(result)
         indicetemporales = indicetemporales + 1
         #sem = checkSemantica.Semantica(op,oper1, oper2)
+        ##RECUERDA, REPARA LA SEMANTICA AL FINAAAAL , FINAAAL , FINAAAL
+        #  def normalCuad(self, operador=None, operando1=None, operando2=None, destino=None):
+        cuadruplo.normalCuad(op,oper1,oper2,result)
+
+
 
 #recibe los operadores And y Or
 def p_ExpresionAux(t):
@@ -614,19 +613,21 @@ def p_ExpresA(t):
     '''
     ExpresA : ExpresAux Exp
     '''
-    global checkSemantica, stackOperador, stackOperando, temporales,indicetemporales
+    global checkSemantica, stackOperador, stackOperando, temporales,indicetemporales,cuadruplo
     top = stackOperador[len(stackOperador) - 1]
     print("OPERADORES HASTA EL MOMENTO COMPARATIVO", stackOperador)
     if (top == '<' or top == '>'):
         temporales[indicetemporales] = "temporalExpres"
         op = stackOperador.pop()
         oper2 = stackOperando.pop()
-        oper1 = stackOperando.pop
+        oper1 = stackOperando.pop()
         result = 't' + str(indicetemporales)
         temporales.append(result)
         stackOperando.append(result)
         indicetemporales = indicetemporales + 1        
         #sem = checkSemantica.Semantica(op,oper1, oper2)
+        ##RECUERDA, REPARA LA SEMANTICA AL FINAAAAL , FINAAAL , FINAAAL
+        cuadruplo.normalCuad(op,oper1,oper2,result)
 
 
 #carga los operadores comparativos
@@ -649,7 +650,7 @@ def p_ExpA(t):
     '''
     ExpA : ExpAux Termino
     '''
-    global checkSemantica, stackOperador, stackOperando, temporales, indicetemporales
+    global checkSemantica, stackOperador, stackOperando, temporales, indicetemporales,cuadruplo
     top = stackOperador[len(stackOperador) - 1]
     print("OPERADORES HASTA EL MOMENTO + -", stackOperador)
     if (top == '+' or top == '-'):
@@ -663,6 +664,10 @@ def p_ExpA(t):
         stackOperando.append(result)
         indicetemporales = indicetemporales + 1
         #sem = checkSemantica.Semantica(op,oper1, oper2)
+        ##RECUERDA, REPARA LA SEMANTICA AL FINAAAAL , FINAAAL , FINAAAL
+        cuadruplo.normalCuad(op,oper1,oper2,result)
+
+
 
 #carga los operadores de suma y resta
 def p_ExpAux(t):
@@ -684,7 +689,7 @@ def p_TerminoA(t):
     '''
     TerminoA : TerminoAux Factor
     '''
-    global checkSemantica, stackOperador, stackOperando,temporales,indicetemporales
+    global checkSemantica, stackOperador, stackOperando,temporales,indicetemporales,cuadruplo
     top = stackOperador[len(stackOperador) - 1]
     print("OPERADORES HASTA EL MOMENTO * /", stackOperador)
     if (top == '*' or top == '/'):
@@ -697,6 +702,9 @@ def p_TerminoA(t):
         stackOperando.append(result)
         indicetemporales = indicetemporales + 1
         #sem = checkSemantica.Semantica(op,oper1, oper2)
+        ##RECUERDA, REPARA LA SEMANTICA AL FINAAAAL , FINAAAL , FINAAAL
+        cuadruplo.normalCuad(op,oper1,oper2,result)
+
  
 #inserta los terminos * y / en el stack de operadores
 def p_TerminoAux(t):

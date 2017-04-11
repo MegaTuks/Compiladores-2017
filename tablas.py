@@ -7,6 +7,7 @@
 # real [bool, int ,float,string],
 # caracter [bool, int ,float,string],
 # ]
+
 class claseCuboSemantico:
     def __init__(self):
         self.DataTypes = ['bool', 'int', 'real', 'caracter', 'error']
@@ -84,8 +85,15 @@ class Cuadruplos:
 
     def SaltaCuad(self, Goto, destino=None):
       self.cuadruplos.append((Goto, None, "1", destino))
-      return len(self.cuadruplos) - 1
       print("ver como codigicar saltos")
+
+    def CuadIndex(self):
+      return len(self.cuadruplos) - 1
+
+    def InsertarSalto(self,indice,salto):
+      jump = (self.cuadruplos[indice][0], self.cuadruplos[indice][1], self.cuadruplos[indice][2], salto)
+      self.cuadruplos[indice] = jump
+
 
     def AgregarSalto(self, indice, expr, destino=None):
       if destino is None:
@@ -104,8 +112,78 @@ class Cuadruplos:
         return self.cuadruplos[-1]
 
     def imprimir(self):
+        print("|---------------------------------------------------------------------------------------------------|")
+        print("|-----------------------------------------CUADRUPLOS------------------------------------------------|")
         indice = 0
         for cuad in self.cuadruplos:
-            print('indice:', indice, 'operador: ', cuad[0], 'operando1: ', cuad[1], 'operando2: ', cuad[2], 'destino:',
-                  cuad[3])
+            cuadrin='| indice:'+ str(indice).rjust(3,' ') + ' | operador: '+ str(cuad[0]).rjust(5,' ') + ' | operando1: ' + str(cuad[1]).rjust(10,' ') + ' | operando2: '+ str(cuad[2]).rjust(10,' ') + ' | destino:'+ str(cuad[3]).rjust(10,' ')+ ' |'
+            print (cuadrin)
             indice = indice + 1
+        print("-----------------------------------------------------------------------------------------------------")
+
+# Tabla de simbolos
+class TablaSimbolos:
+    def __init__(self):
+        self.simbolos = dict()
+        self.hijos = list()
+        self.padre = None
+        # agregar atributo name?
+    #Funcion para insertar variable a la tabla
+    #@id es el identificador de la variable, tipo es un string que denota el tipo de variable que se almacena
+    def insertar(self, id, tipo):
+        self.simbolos[id] = tipo
+    
+    #funcion de busqueda, devuelve el tipo, de no existir devuelve none
+    def buscar(self, id):
+        return self.simbolos.get(id)
+
+     #funcion que anexa una tablasimbolos con otra
+     #@hijo es la tabla de simbolos que se le anexara como hijo a esta tabla
+    def agregarHijo(self, hijo):
+        self.hijos.append(hijo)
+
+    #funcion para indicar cual es la tabla padre de la variable.
+    #@pad es la tabla de simbolos padre    
+    def agregarPadre(self, pad):
+        self.padre = pad
+    # funcion para devolver el padre
+    # de no existir imprime no existe padre
+    #de lo contrario devuelve la tabla simbolos padre    
+    def devolverPadre(self):
+        if (self.padre is None):
+            print("no hay padre al cual ir");
+        else:
+            return self.padre
+    # funcion para devolver el hijo
+    # @name es el nombre de la tabla hijo a buscar
+    #devuelve hijo si encuentra uno.
+    def buscarHijos(self, name):
+        for hijo in self.hijos:
+            existe = hijo.buscar(name)
+            if (existe is not None):
+                return hijo
+
+                # def __str__(self):
+    #funcion que imprime los valores dentro de la tablaSimbolos
+    def imprimir(self):
+        i = 0
+        for hijo in self.hijos:
+            print("Hijo:",hijo.simbolos)
+        print ("tablaGlobal",self.simbolos)
+
+
+
+#Tabla que maneja las constantes
+#almacena la constante y su tipo.
+class TablaConstantes:
+    def __init__(self):
+        self.simbolos = dict()
+
+    def insertar(self, id, tipo):
+        self.simbolos[id] = tipo
+
+    def buscar(self, id):
+        return self.simbolos.get(id)
+
+    def imprimir(self):
+        print("Constantes:",self.simbolos)
