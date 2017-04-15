@@ -64,10 +64,13 @@ stackOperador = []  # se usa para guardar los operadores del momento
 stackOperando = []  # se usa para guardar las ,variables, constantes, temporales;
 stackSaltos = [] # stack saltos para guardar los saltos de GOTOF
 temporales = [] #tabla de valores temporales. 
+stackCambio = [] #contiene los casos de caso(ultimo indice a modificar). 
 temporales.append(None)
 indicetemporales = 0 #indice de las variables temporales.
 checkSemantica = claseCuboSemantico()
 cuadruplo = Cuadruplos()
+memoriaGlobal = MemoriaReal()
+memoriaLocal = MemoriaReal(10000)
 #FIN DE VARIABELS DE COMPILACION
 
 # Tipo numerico que acepta numeros reales 
@@ -129,6 +132,7 @@ def p_Programa(t):
       Programa : ProgramaA FuncionPrincipal
     '''
     global tablaGlobal, tablaSimbolosActual, tablaConstantes,cuadruplo
+    cuadruplo.normalCuad('FIN',None,None,None)
     tablaSimbolosActual.imprimir()
     tablaConstantes.imprimir()
     cuadruplo.imprimir()
@@ -353,8 +357,33 @@ def p_LlamadaFuncionB(t):
 
 def p_Ciclo(t):
     '''
-    Ciclo : KEYWORD_MIENTRAS PARENTESIS_IZQ Expresion PARENTESIS_DER Bloque
+    Ciclo : KEYWORD_MIENTRAS PARENTESIS_IZQ Expresion PARENTESIS_DER CicloAux Bloque FinCiclo
     '''
+
+def p_CicloAux(t):
+    '''
+    CicloAux : 
+    '''
+    global tablaSimbolosActual,tablaGlobal,stackOperando,cuadruplo,stackSaltos
+    #print("Cuadruplo Indice: ",cuadruplo.CuadIndex())
+    op = stackOperando.pop()
+    cuadruplo.normalCuad("GOTOF",op,None,None)
+    salto = cuadruplo.CuadIndex()
+    stackSaltos.append(salto)
+    print("Ciclo")
+
+def p_FinCiclo(t):
+    '''
+    FinCiclo : 
+    '''
+    global tablaSimbolosActual,tablaGlobal,stackOperando,cuadruplo,stackSaltos
+    #print("Cuadruplo Indice: ",cuadruplo.CuadIndex())
+    indice = stackSaltos.pop()
+    cuadruplo.normalCuad('GOTO',None,None,indice)
+    salto = cuadruplo.CuadIndex() + 1
+    cuadruplo.InsertarSalto(indice,salto)
+
+
 
 def p_LlamadaId(t):
     '''
@@ -429,23 +458,25 @@ def p_CondicionA(t):
     print('entraste CondicionA?')
     global cuadruplo,stackOperando,stackSaltos
     indice = stackSaltos.pop()
-    salto = cuadruplo.CuadIndex() + 1
+    salto = cuadruplo.CuadIndex()
     cuadruplo.InsertarSalto(indice,salto)
 
-def p_SaltoBloque(t):
-    '''
-    '''
 
 def p_CondicionSino(t):
     '''
-    CondicionSino : KEYWORD_SINO Bloque FinSino
+    CondicionSino : SinoAux Bloque FinSino
+    '''
+    
+def p_SinoAux(t):
+    '''
+    SinoAux : KEYWORD_SINO
     '''
     global cuadruplo, stackOperando,stackSaltos
     #print("Cuadruplo Indice: ",cuadruplo.CuadIndex())
-    op = stackOperando.pop()
     cuadruplo.normalCuad("GOTO",None,None,None)
     salto = cuadruplo.CuadIndex()
     stackSaltos.append(salto)
+
 
 def p_FinSino(t):
     '''
@@ -459,8 +490,12 @@ def p_FinSino(t):
 
 def p_Entrada(t):
     '''
-    Entrada : KEYWORD_ENTRADA IDENTIFICADOR SEMICOLON
+    Entrada : KEYWORD_ENTRADA IDENTIFICADOR EntradaA SEMICOLON
     '''
+    global cuadruplo,stackOperando
+    identificador = t[2]
+    cuadruplo.normalCuad("input",identificador,None,None)
+
 
 def p_EntradaA(t):
     '''
@@ -478,22 +513,49 @@ def p_Salida(t):
     '''
     Salida : KEYWORD_SALIDA Expresion SEMICOLON
     '''
+    global cuadruplo,stackOperando
+    identificador = stackOperando.pop()
+    cuadruplo.normalCuad("output",identificador,None,None)
 
 def p_Cambio(t):
     '''
-    Cambio : KEYWORD_CAMBIO PARENTESIS_IZQ Expresion PARENTESIS_DER BRACKET_IZQ CambioA
+    Cambio : KEYWORD_CAMBIO PARENTESIS_IZQ Expresion PARENTESIS_DER BRACKET_IZQ CambioA BRACKET_DER
     '''
 
 def p_CambioA(t):
     '''
-    CambioA : KEYWORD_CASO ValorSalida COLON Bloque KEYWORD_ROMPE SEMICOLON CambioA
+    CambioA : CambioCasoAux Bloque FinCambioCaso CambioA
     | empty
     '''
 
-def p_CambioB(t):
+    
+def p_CambioCasoAux(t):
     '''
-    CambioB : KEYWORD_BASE COLON Bloque BRACKET_DER
+    CambioCasoAux : KEYWORD_CASO ValorSalida COLON
     '''
+    global cuadruplo, stackOperando,stackSaltos,temporales,indicetemporales,stackCambio
+    op = stackOperando.pop()
+    comparador = t[2]
+    temporales[indicetemporales] = "temporalCambio"
+    result = 't' + str(indicetemporales)
+    temporales.append(result)
+    indicetemporales = indicetemporales + 1
+    cuadruplo.normalCuad('==', op, comparador, result)
+    cuadruplo.normalCuad('GOTOF',result,None,None)
+    asaltar = cuadruplo.CuadIndex()
+    stackOperando.append(op)
+    stackSaltos.append(asaltar)
+    stackCambio.append(asaltar)
+
+def p_FinCambioCaso(t):
+    '''
+    FinCambioCaso : 
+    '''
+    global cuadruplo, stackOperando, stackSaltos, stackCambio
+    indice = stackSaltos.pop()
+    salto = cuadruplo.CuadIndex() + 1
+    cuadruplo.InsertarSalto(indice,salto)
+
 
 def p_ValorSalida(t):
     '''

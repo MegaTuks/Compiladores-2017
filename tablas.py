@@ -187,3 +187,84 @@ class TablaConstantes:
 
     def imprimir(self):
         print("Constantes:",self.simbolos)
+
+#clase de procedimeintos en esta manejamos lo relacionado a funciones.
+class Procedimientos:
+    def __init__(self):
+        self.procedimientos = list()
+        self.listParam = dict()
+
+    def normalLista(self, id, parametros, variables, cuadruplo):
+        self.procedimientos.append((id, parametros, variables, cuadruplo))
+        print("ID Procedimiento:" ,id , " # Param:",parametros, " # Variables:", variables , "Destino:",cuadruplo)
+
+    def updateLista(self, index, id, parametros, variables, destino):
+        self.procedimientos[index] = (id, parametros, variables, destino)
+
+    def meteParametros(self, id, lista = []):
+        self.listParam[id] = lista
+
+    def buscar(self, id):
+        return self.listParam.get(id)
+
+    def ListaSize(self):
+        return len(self.procedimientos)
+
+    def Ultimo(self):
+        return self.procedimientos[-1]
+
+    def imprimir(self):
+        indice = 0
+        for proc in self.procedimientos:
+            print('indice:', indice, 'ID Procedimiento: ', proc[0], '#Param: ', proc[1], '#Variables: ', proc[2], 'Destino:',
+                  proc[3])
+            indice = indice + 1
+
+
+class MemoriaReal:
+    def __init__(self, rango = 0): 
+        self.booleanos = rango
+        self.enteros = rango + 2500
+        self.reales = rango + 5000
+        self.caracteres =  rango + 7500
+
+        self.cont_bool = self.booleanos
+        self.cont_ent = self.enteros
+        self.cont_real = self.reales
+        self.cont_car = self.caracteres
+
+    def insertaBooleano(self,valor):
+        if(self.cont_bool < self.enteros):
+            self.cont_bool = self.cont_bool + 1
+            return self.cont_bool
+        else:
+            print("memoria fuera de limites")
+
+    def insertaEntero(self,valor):
+        if(self.cont_ent < self.reales):
+            self.cont_ent = self.cont_ent + 1
+            return self.cont_ent
+        else:
+            print("memoria fuera de limites")
+    
+    def insertaReales(self,valor):
+        if(self.cont_real < self.caracteres):
+            self.cont_real = self.cont_real + 1
+            return self.cont_real
+        else:
+            print("memoria fuera de limites")
+
+    def insertaCaracteres(self,memID,valor):
+        if(self.cont_car < caracteres + 2500):
+            self.cont_car = self.cont_car + 1
+            return self.cont_car
+        else:
+            print("memoria fuera de limites")
+
+    def eliminaTemporales(self,topeBool, topeInt,topeReal, topeCar):
+        print("funcion de borrado")
+
+
+
+
+
