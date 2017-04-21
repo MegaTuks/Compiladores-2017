@@ -194,9 +194,9 @@ class Procedimientos:
         self.procedimientos = list()
         self.listParam = dict()
 
-    def normalLista(self, id, parametros, variables, cuadruplo):
-        self.procedimientos.append((id, parametros, variables, cuadruplo))
-        print("ID Procedimiento:" ,id , " # Param:",parametros, " # Variables:", variables , "Destino:",cuadruplo)
+    def normalLista(self, id, cuadruplo):
+        self.procedimientos.append((id, self.listParam[id], cuadruplo))
+        print("ID Procedimiento:" , id, " # Param:", self.listParam[id] , "Destino:", cuadruplo)
 
     def updateLista(self, index, id, parametros, variables, destino):
         self.procedimientos[index] = (id, parametros, variables, destino)
@@ -263,8 +263,4 @@ class MemoriaReal:
 
     def eliminaTemporales(self,topeBool, topeInt,topeReal, topeCar):
         print("funcion de borrado")
-
-
-
-
 

@@ -65,6 +65,9 @@ stackOperando = []  # se usa para guardar las ,variables, constantes, temporales
 stackSaltos = [] # stack saltos para guardar los saltos de GOTOF
 temporales = [] #tabla de valores temporales. 
 stackCambio = [] #contiene los casos de caso(ultimo indice a modificar). 
+listaParametros = [] #lista de parametros para procedimientos. 
+listaprocedimientos = Procedimientos()
+nuevaFuncion = "" #nombredel procedimeinto para ajustar.
 temporales.append(None)
 indicetemporales = 0 #indice de las variables temporales.
 checkSemantica = claseCuboSemantico()
@@ -129,7 +132,7 @@ def p_error(t):
 #diagrama de sintaxis Inicial del pograma , Funcion principal 
 def p_Programa(t):
     '''
-      Programa : ProgramaA FuncionPrincipal
+      Programa : ProgramaInicio ProgramaA FuncionPrincipal
     '''
     global tablaGlobal, tablaSimbolosActual, tablaConstantes,cuadruplo
     cuadruplo.normalCuad('FIN',None,None,None)
@@ -137,6 +140,15 @@ def p_Programa(t):
     tablaConstantes.imprimir()
     cuadruplo.imprimir()
 
+#salto inicial del programa. 
+def p_ProgramaInicio(t):
+    '''
+    ProgramaInicio : 
+    '''
+    global cuadruplo,stackSaltos
+    cuadruplo.normalCuad('GOTO',None,None,None)
+    salto = cuadruplo.CuadIndex()
+    stackSaltos.append(salto)
 
 #diagrama de sintaxis de como funciona el programa , puedes ahcer declaraciones, Funciones o clases antes de entrar al main
 def p_ProgramaA(t):
@@ -157,18 +169,22 @@ def p_FinPrincipal(t):
     '''
     global tablaSimbolosActual, tablaGlobal
     tablaSimbolosActual =  tablaGlobal
+
 def p_PrincipalAux(t):
     '''
     PrincipalAux : KEYWORD_PRINCIPAL
     '''
-    global tablaSimbolosActual
+    global tablaSimbolosActual,cuadruplo,stackSaltos
     identificador = t[1]
     tablaF = TablaSimbolos()
     tablaSimbolosActual.insertar(identificador,"funcionPrincipal")
     tablaF.insertar(identificador,"principal")
     tablaSimbolosActual.agregarHijo(tablaF)
     tablaF.agregarPadre(tablaSimbolosActual)
-    tablaSimbolosActual = tablaF  
+    tablaSimbolosActual = tablaF
+    indice = stackSaltos.pop()
+    salto =  cuadruplo.CuadIndex() + 1
+    cuadruplo.InsertarSalto(indice, salto)
 
 
 def p_Funcion(t):
@@ -180,20 +196,25 @@ def p_FinFuncion(t):
     '''
     FinFuncion : 
     '''
-    global tablaGlobal, tablaSimbolosActual
+    global tablaGlobal, tablaSimbolosActual,nuevaFuncion,listaprocedimientos,listaParametros,cuadruplo
+    destino = cuadruplo.CuadIndex()
     tablaSimbolosActual = tablaGlobal
+    listaprocedimientos.meteParametros(nuevaFuncion, listaParametros)
+    listaprocedimientos.normalLista(nuevaFuncion,destino)
+    nuevaFuncion = ""
 
 def p_FuncionAux(t):
     '''
     FuncionAux : KEYWORD_FUNCION Tipo IDENTIFICADOR
     '''
-    global tablaSimbolosActual, tablaGlobal
+    global tablaSimbolosActual, tablaGlobal, nuevaFuncion
     funcion  = t[1]
     tipo =  t[2]
     identificador =  t[3]
     tablaF = TablaSimbolos()
     existe = tablaGlobal.buscar(t[3])
     if(existe is None):
+        nuevaFuncion = identificador
         tablaSimbolosActual.insertar(identificador,funcion)
         tablaF.insertar(identificador,tipo)
         tablaSimbolosActual.agregarHijo(tablaF)
@@ -210,12 +231,14 @@ def p_FuncionA(t):
     FuncionA : Tipo IDENTIFICADOR FuncionB
     | empty
     '''
-    global tablaSimbolosActual, tablaGlobal
+    global tablaSimbolosActual, tablaGlobal,listaParametros
     if(len(t) == 4):
         tipo = t[1]
         identificador = t[2]
         existe = tablaSimbolosActual.buscar(identificador)
         if(existe is None):
+            parametro = {identificador : tipo }
+            listaParametros.append(parametro)
             tablaSimbolosActual.insertar(identificador, tipo)
         else:
             print("parametro declarado previamente, o variable global comparte su nombre")
