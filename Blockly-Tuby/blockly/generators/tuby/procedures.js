@@ -105,9 +105,9 @@ Blockly.tuby['procedures_ifreturn'] = function(block) {
 };
 
 Blockly.tuby['procedures_expresion'] = function(block) {
-  var statements_do = Blockly.tuby.statementToCode(block, 'nom');
+  var statements_do = Blockly.tuby.statementToCode(block, 'expresion');
   statements_do = Blockly.tuby.addLoopTrap(statements_do, block.id);
-  var statements_nom = Blockly.tuby.statementToCode(block, 'nom');
+  var statements_nom = Blockly.tuby.statementToCode(block, 'expresion');
   statements_nom = Blockly.tuby.addLoopTrap(statements_do, block.id);
   // TODO: Assemble tuby into code variable.
   var code = '(' + statements_nom + ')';
@@ -124,8 +124,8 @@ Blockly.tuby['procedures_express'] = function(block) {
 };
 
 Blockly.tuby['proced_exp'] = function(block) {
-  var value_expression = Blockly.tuby.valueToCode(block, 'expression', Blockly.tuby.ORDER_ATOMIC);
-  var argument1 = Blockly.tuby.valueToCode(block, 'expression',
+  var value_expression = Blockly.tuby.valueToCode(block, 'expresion', Blockly.tuby.ORDER_ATOMIC);
+  var argument1 = Blockly.tuby.valueToCode(block, 'expresion',
     Blockly.tuby.ORDER_ASSIGNMENT) || 'NULL';
   // TODO: Assemble tuby into code variable.
   var code = '('+argument1+')';
@@ -192,7 +192,7 @@ Blockly.tuby['proc_arg2'] = function(block) {
 
 Blockly.tuby['proc'] = function(block) {
   var dropdown_tipo = block.getFieldValue('tipo');
-  var text_nombre = block.getFieldValue('nombre');
+  var text_nombre = block.getFieldValue('nomFuncion');
   var value_name = Blockly.tuby.valueToCode(block, 'NAME', Blockly.tuby.ORDER_ATOMIC);
   var statements_stats = Blockly.tuby.statementToCode(block, 'stats');
   // TODO: Assemble tuby into code variable.

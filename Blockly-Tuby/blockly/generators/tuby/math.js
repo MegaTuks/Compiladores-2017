@@ -55,6 +55,29 @@ Blockly.tuby['math_arithmetic'] = function(block) {
   return [code, order];
 };
 
+Blockly.tuby['math_arithmetic_par'] = function(block) {
+  // Basic arithmetic operators, and power.
+  var OPERATORS = {
+    'ADD': [' + ', Blockly.tuby.ORDER_ADDITION],
+    'MINUS': [' - ', Blockly.tuby.ORDER_SUBTRACTION],
+    'MULTIPLY': [' * ', Blockly.tuby.ORDER_MULTIPLICATION],
+    'DIVIDE': [' / ', Blockly.tuby.ORDER_DIVISION],
+  };
+  var tuple = OPERATORS[block.getFieldValue('OP')];
+  var operator = tuple[0];
+  var order = tuple[1];
+  var argument0 = Blockly.tuby.valueToCode(block, 'A', order) || '0';
+  var argument1 = Blockly.tuby.valueToCode(block, 'B', order) || '0';
+  var code;
+  // Power in tuby requires a special case since it has no operator.
+  if (!operator) {
+    code = 'Math.pow(' + '(' + argument0 + ', ' + argument1 + ')' + ')';
+    return [code, Blockly.tuby.ORDER_FUNCTION_CALL];
+  }
+  code = '(' + argument0 + operator + argument1 + ')';
+  return [code, order];
+};
+
 
 
 Blockly.tuby['math_modulo'] = function(block) {

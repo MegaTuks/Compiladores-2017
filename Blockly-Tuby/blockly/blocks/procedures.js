@@ -802,7 +802,7 @@ Blockly.Blocks['procedures_ifreturn'] = {
 
 Blockly.Blocks['procedures_expresion'] = {
   init: function() {
-    this.appendStatementInput("nom")
+    this.appendValueInput("expresion")
         .setCheck(null)
         .appendField("expresion");
     this.setOutput(true, null);
@@ -830,12 +830,25 @@ Blockly.Blocks['proced_exp'] = {
     this.appendValueInput("expresion")
         .setCheck(null)
         .appendField("expresion");
+    this.setOutput(true, null);
     this.setColour(290);
     this.setTooltip('');
     this.setHelpUrl('http://www.example.com/');
   }
 };
-
+/*
+Blockly.Blocks['proc_arg'] = {
+  init: function() {
+    this.appendValueInput("arg")
+        .setCheck(null)
+        .appendField(new Blockly.FieldDropdown([["entero", "entero"], ["real", "real"], ["booleano", "booleano"], ["caracter", "caracter"]]), "tipo")
+        .appendField(new Blockly.FieldTextInput("parametro"), "parametro");
+    this.setOutput(true, null);
+    this.setColour(330);
+    this.setTooltip('');
+    this.setHelpUrl('http://www.example.com/');
+  }
+};*/
 
 
 Blockly.Blocks['create_main'] = {
