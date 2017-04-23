@@ -188,15 +188,16 @@ class TablaConstantes:
     def imprimir(self):
         print("Constantes:",self.simbolos)
 
+
 #clase de procedimeintos en esta manejamos lo relacionado a funciones.
 class Procedimientos:
     def __init__(self):
         self.procedimientos = list()
         self.listParam = dict()
 
-    def normalLista(self, id, cuadruplo):
-        self.procedimientos.append((id, self.listParam[id], cuadruplo))
-        print("ID Procedimiento:" , id, " # Param:", self.listParam[id] , "Destino:", cuadruplo)
+    def normalLista(self, id, cuadinicio,cuadruplofin):
+        self.procedimientos.append((id, self.listParam[id], cuadinicio,cuadruplofin))
+        print("ID Procedimiento:" , id, " # Param:", self.listParam[id] , "inicio:",cuadinicio ,"Final:", cuadruplofin)
 
     def updateLista(self, index, id, parametros, variables, destino):
         self.procedimientos[index] = (id, parametros, variables, destino)
@@ -216,7 +217,7 @@ class Procedimientos:
     def imprimir(self):
         indice = 0
         for proc in self.procedimientos:
-            print('indice:', indice, 'ID Procedimiento: ', proc[0], '#Param: ', proc[1], '#Variables: ', proc[2], 'Destino:',
+            print('indice:', indice, 'ID Procedimiento: ', proc[0], '#Param: ', proc[1], 'INICIO: ', proc[2], 'FIN:',
                   proc[3])
             indice = indice + 1
 
@@ -255,7 +256,7 @@ class MemoriaReal:
             print("memoria fuera de limites")
 
     def insertaCaracteres(self,memID,valor):
-        if(self.cont_car < caracteres + 2500):
+        if(self.cont_car < self.caracteres + 2500):
             self.cont_car = self.cont_car + 1
             return self.cont_car
         else:

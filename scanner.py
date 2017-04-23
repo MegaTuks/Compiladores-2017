@@ -65,9 +65,13 @@ stackOperando = []  # se usa para guardar las ,variables, constantes, temporales
 stackSaltos = [] # stack saltos para guardar los saltos de GOTOF
 temporales = [] #tabla de valores temporales. 
 stackCambio = [] #contiene los casos de caso(ultimo indice a modificar). 
+##variables para funciones
 listaParametros = [] #lista de parametros para procedimientos. 
 listaprocedimientos = Procedimientos()
+stackParam = [] #parametro que guardara en una pila , la LISTA de parametros
+procedureName = []#registrar el nombre de la funcion temporalmente.
 nuevaFuncion = "" #nombredel procedimeinto para ajustar.
+inicioCuad = 0
 temporales.append(None)
 indicetemporales = 0 #indice de las variables temporales.
 checkSemantica = claseCuboSemantico()
@@ -117,6 +121,25 @@ def insertaConstante(iden,tipo):
     else:
         print ("previamente insertada")
 
+def makeParam(paramID, stackActual):
+    global listaprocedimientos,cuadruplo
+    print ("paramID: ", paramID)
+    lista = listaprocedimientos.buscar(paramID)
+    if (lista is None):
+        print ("error en la funcion")
+        raise SystemExit
+    else:
+        longitudTotal = len(lista)
+        longitudActual = len(stackActual)
+        if(longitudTotal == 0):
+            paramActual = -1
+        else:
+            paramActual = longitudTotal - longitudActual + 1
+        return paramActual
+
+
+
+
 import ply.lex as lex
 
 lexer = lex.lex()
@@ -134,11 +157,12 @@ def p_Programa(t):
     '''
       Programa : ProgramaInicio ProgramaA FuncionPrincipal
     '''
-    global tablaGlobal, tablaSimbolosActual, tablaConstantes,cuadruplo
+    global tablaGlobal, tablaSimbolosActual, tablaConstantes,cuadruplo,listaprocedimientos
     cuadruplo.normalCuad('FIN',None,None,None)
     tablaSimbolosActual.imprimir()
     tablaConstantes.imprimir()
     cuadruplo.imprimir()
+    listaprocedimientos.imprimir()
 
 #salto inicial del programa. 
 def p_ProgramaInicio(t):
@@ -174,7 +198,7 @@ def p_PrincipalAux(t):
     '''
     PrincipalAux : KEYWORD_PRINCIPAL
     '''
-    global tablaSimbolosActual,cuadruplo,stackSaltos
+    global tablaSimbolosActual,cuadruplo,stackSaltos,listaprocedimientos
     identificador = t[1]
     tablaF = TablaSimbolos()
     tablaSimbolosActual.insertar(identificador,"funcionPrincipal")
@@ -196,18 +220,21 @@ def p_FinFuncion(t):
     '''
     FinFuncion : 
     '''
-    global tablaGlobal, tablaSimbolosActual,nuevaFuncion,listaprocedimientos,listaParametros,cuadruplo
+    global tablaGlobal, tablaSimbolosActual,nuevaFuncion,listaprocedimientos,listaParametros,cuadruplo,inicioCuad
+    cuadruplo.normalCuad('RETU',None,None,None)
     destino = cuadruplo.CuadIndex()
     tablaSimbolosActual = tablaGlobal
     listaprocedimientos.meteParametros(nuevaFuncion, listaParametros)
-    listaprocedimientos.normalLista(nuevaFuncion,destino)
+    listaprocedimientos.normalLista(nuevaFuncion,inicioCuad,destino)
     nuevaFuncion = ""
+    inicioCuad = 0
+    listaParametros = []
 
 def p_FuncionAux(t):
     '''
     FuncionAux : KEYWORD_FUNCION Tipo IDENTIFICADOR
     '''
-    global tablaSimbolosActual, tablaGlobal, nuevaFuncion
+    global tablaSimbolosActual, tablaGlobal, nuevaFuncion,cuadruplo,inicioCuad
     funcion  = t[1]
     tipo =  t[2]
     identificador =  t[3]
@@ -215,6 +242,7 @@ def p_FuncionAux(t):
     existe = tablaGlobal.buscar(t[3])
     if(existe is None):
         nuevaFuncion = identificador
+        inicioCuad =  cuadruplo.CuadIndex() + 1
         tablaSimbolosActual.insertar(identificador,funcion)
         tablaF.insertar(identificador,tipo)
         tablaSimbolosActual.agregarHijo(tablaF)
@@ -260,7 +288,7 @@ def p_BloqueA(t):
     '''
     BloqueA : Declaracion BloqueA
     | Asignacion BloqueA
-    | LlamadaId BloqueA
+    | LlamadaFuncion SEMICOLON BloqueA
     | Ciclo BloqueA
     | Condicion BloqueA
     | Entrada BloqueA
@@ -277,7 +305,7 @@ def p_RetornoAux(t):
     global cuadruplo, stackOperando
     op = stackOperando.pop()
     retorno =  t[1]
-    cuadruplo.normalCuad('ret',None,None,op)
+    cuadruplo.normalCuad('ret', None, None, op)
 
 def p_Declaracion(t):
     '''
@@ -352,31 +380,60 @@ def p_AsignacionB(t):
 
 def p_LlamadaFuncion(t):
     '''
-    LlamadaFuncion : LlamadaAux PARENTESIS_IZQ LlamadaFuncionA PARENTESIS_DER
+    LlamadaFuncion : LlamadaAux PARENTESIS_IZQ LlamadaFuncionA PARENTESIS_DER finLlamada
     '''
 
 def p_LlamadaAux(t):
     '''
     LlamadaAux : IDENTIFICADOR
     '''
-    global tablaGlobal
+    global tablaGlobal, cuadruplo, stackParam, listaprocedimientos, procedureName
     identificador = t[1]
     existe = tablaGlobal.buscar(t[1])
     if(existe is None):
         print("Funcion no declarada")
         raise SystemExit
+    else:
+        iden = listaprocedimientos.buscar(identificador)
+        stackParam.append(iden)
+        procedureName.append(identificador)
+        print("stack de parametros: ",stackParam)
+        cuadruplo.normalCuad('ERA', identificador, None, None)
+
+
 
 def p_LlamadaFuncionA(t):
     '''
     LlamadaFuncionA : Expresion LlamadaFuncionB
     | empty
     '''
+    global cuadruplo,stackParam,procedureName,stackOperando
+    listaPar = stackParam.pop()
+    iden = procedureName.pop()
+    param = makeParam(iden, listaPar)
+    procedureName.append(iden)
+    if (param == -1):
+        print("Funcion Sin parametros")
+    else:
+
+        expresion = stackOperando.pop()
+        paramNo = 'param#' + str(param)
+        cuadruplo.normalCuad('param', expresion, None, paramNo)
 
 def p_LlamadaFuncionB(t):
     '''
     LlamadaFuncionB : COMA LlamadaFuncionA
     | empty
     '''
+
+def p_finLlamada(t):
+    '''
+    finLlamada : 
+    '''
+    global cuadruplo, stackOperando,procedureName
+    iden =  procedureName.pop()
+    cuadruplo.normalCuad('gosub', iden, None, None)
+
 
 def p_Ciclo(t):
     '''
