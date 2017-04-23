@@ -145,7 +145,7 @@ Blockly.tuby['procedures_main2'] = function(block) {
   var statements_name = Blockly.tuby.statementToCode(block, 'NAME');
   statements_name = Blockly.tuby.addLoopTrap(statements_name, block.id);
   // TODO: Assemble tuby into code variable.
-  var code = 'principal{' + '\n' + statements_name + '\n' + '}';
+  var code = 'principal{' + '\n' + statements_name + '\n}';
   return code;
 };
 
@@ -196,14 +196,14 @@ Blockly.tuby['proc'] = function(block) {
   var value_name = Blockly.tuby.valueToCode(block, 'NAME', Blockly.tuby.ORDER_ATOMIC);
   var statements_stats = Blockly.tuby.statementToCode(block, 'stats');
   // TODO: Assemble tuby into code variable.
-  var code = 'funcion ' + dropdown_tipo + ' ' + text_nombre + ' (' +value_name + '){\n' + statements_stats + '\n}';
+  var code = 'funcion ' + dropdown_tipo + ' ' + text_nombre + ' (' +value_name + '){\n' + statements_stats + '\n}\n';
   return code;
 };
 
 Blockly.tuby['return'] = function(block) {
   var value_returnval = Blockly.tuby.valueToCode(block, 'returnVal', Blockly.tuby.ORDER_ATOMIC);
   // TODO: Assemble tuby into code variable.
-  var code = 'retorno ' + value_returnval + ';\n';
+  var code = 'retorno ' + value_returnval;
   return code;
 };
 

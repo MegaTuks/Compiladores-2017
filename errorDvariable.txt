@@ -1,0 +1,7 @@
+entero boop;
+entero boop;
+
+principal{
+  salida "Falla.";
+
+}

@@ -1,0 +1,8 @@
+funcion real dobleParam (real a, real a){
+
+}
+
+principal{
+  salida "Falla codigo.";
+
+}

@@ -1,0 +1,12 @@
+funcion real gemini (){
+
+}
+
+funcion entero gemini (){
+
+}
+
+principal{
+  salida "Falla.";
+
+}

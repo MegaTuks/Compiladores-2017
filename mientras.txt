@@ -1,0 +1,9 @@
+principal{
+  entero a;
+  a = 10;
+  mientras (a > 0){
+    a = a - 1;
+  }
+  salida a;
+
+}

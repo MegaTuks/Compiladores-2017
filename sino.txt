@@ -1,0 +1,11 @@
+principal{
+  entero mayor;
+  entero menor;
+  mayor = 1;
+  menor = 0;
+  si (mayor > menor) {
+    salida "Si es mayor!";
+  } si no {
+    salida "No deberias poder ver esto.";
+  }
+}
