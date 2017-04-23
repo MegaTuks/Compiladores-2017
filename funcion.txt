@@ -1,0 +1,12 @@
+funcion entero pruebaFuncion (entero a){
+  entero b;
+  b = a + b;
+  retorno b;
+
+}
+principal{
+  entero first;
+  first = 5;
+  pruebaFuncion( first);
+
+}

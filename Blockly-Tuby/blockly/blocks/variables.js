@@ -162,8 +162,7 @@ Blockly.Blocks['var_dec'] = {
   init: function() {
     this.appendDummyInput()
         .appendField(new Blockly.FieldDropdown([["entero", "entero"], ["booleano", "booleano"], ["real", "real"], ["caracter", "caracter"]]), "opcion")
-        .appendField(new Blockly.FieldTextInput("variable"), "variable")
-        .appendField(";");
+        .appendField(new Blockly.FieldTextInput("variable"), "variable");
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);

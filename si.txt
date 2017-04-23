@@ -1,0 +1,7 @@
+principal{
+  entero nope;
+  nope = falso;
+  si (nope == verdadero) {
+    salida "No deberias poder ver esto.";
+  }
+}

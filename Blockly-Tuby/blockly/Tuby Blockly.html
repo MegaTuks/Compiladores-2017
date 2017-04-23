@@ -64,6 +64,7 @@
   <category name="Matematicas" colour="200">
   	<block type="math_number"></block>
   	<block type="math_arithmetic"></block>
+    <block type="math_arithmetic_par"></block>
   
   </category>
   <sep gap="32"></sep>
@@ -85,9 +86,6 @@
     <block type="return"></block>
     <block type="func_call"></block>
     <block type="func_calls"></block>
-    <block type="procedures_expresion"></block>
-    <block type="procedures_express"></block>
-    <block type="pro_exp"></block>
     <block type="procedures_main2"></block>
 
   </category>
@@ -102,14 +100,10 @@
   <sep gap="32"></sep>
 
   <category name="Listas" colour="360">
-  	<block type="lists_create_empty"></block>
-  	<block type="lists_create_with"></block> 
   	<block type="lists_create"></block>
     <block type="lists_create_mat"></block>
     <block type="assign_varList"></block>
     <block type="assign_varMat"></block>
-  	<block type="lists_assign"></block> 
-    <block type="lists_assign2"></block>
   </category>
 
 </xml>
@@ -137,7 +131,7 @@ var workspace = Blockly.inject('blocklyDiv',
 
 <textarea id="textarea" rows="4" cols="50">
 </textarea> 
- <button onclick="myUpdateFunction()">Generate Code</button> 
+ <button onclick="myUpdateFunction()">Generar Codigo</button> 
 
 <!-- generates code function -->
 <script>

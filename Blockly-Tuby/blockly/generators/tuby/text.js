@@ -228,7 +228,7 @@ Blockly.tuby['text_trim'] = function(block) {
 Blockly.tuby['text_print'] = function(block) {
   var value_returnval = Blockly.tuby.valueToCode(block, 'returnVal', Blockly.tuby.ORDER_ATOMIC);
   // TODO: Assemble tuby into code variable.
-  var code = 'salida (' + value_returnval + ');\n';
+  var code = 'salida ' + value_returnval + ';\n';
   return code;
 };
 
@@ -258,6 +258,6 @@ Blockly.tuby['text_prompt'] = Blockly.tuby['text_prompt_ext'];
 Blockly.tuby['procedures_input'] = function(block) {
   var value_name = Blockly.tuby.valueToCode(block, 'NAME', Blockly.tuby.ORDER_ATOMIC);
   // TODO: Assemble tuby into code variable.
-    var code = 'entrada(' + value_name + ');';
+    var code = 'entrada ' + value_name + ';\n';
   return code;
 };
