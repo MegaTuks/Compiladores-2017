@@ -280,12 +280,37 @@ Blockly.Blocks['lists_create_mat'] = {
   init: function() {
     this.appendDummyInput()
         .appendField(new Blockly.FieldDropdown([["entero", "entero"], ["real", "real"], ["caracter", "caracter"], ["booleano", "booleano"]]), "type")
-        .appendField(new Blockly.FieldTextInput("nomLista"), "nomLista")
-        .appendField(new Blockly.FieldTextInput("tamLista1"), "tamLista1")
-        .appendField(new Blockly.FieldTextInput("tamLista2"), "tamLista2");
+        .appendField(new Blockly.FieldTextInput("nomMatriz"), "nomMatriz")
+        .appendField(new Blockly.FieldTextInput("tamMatriz1"), "tamMatriz1")
+        .appendField(new Blockly.FieldTextInput("tamMatriz2"), "tamMatriz2");
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour(230);
+    this.setTooltip('');
+    this.setHelpUrl('http://www.example.com/');
+  }
+};
+
+Blockly.Blocks['use_varList'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField(new Blockly.FieldTextInput("nomLista"), "nomLista")
+        .appendField(new Blockly.FieldTextInput("valLista1"), "valLista1");
+    this.setOutput(true, null);
+    this.setColour(65);
+    this.setTooltip('');
+    this.setHelpUrl('http://www.example.com/');
+  }
+};
+
+Blockly.Blocks['use_varMat'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField(new Blockly.FieldTextInput("nomMatriz"), "nomMatriz")
+        .appendField(new Blockly.FieldTextInput("valMatriz1"), "valMatriz1")
+        .appendField(new Blockly.FieldTextInput("valMatriz2"), "valMatriz2");
+    this.setOutput(true, null);
+    this.setColour(65);
     this.setTooltip('');
     this.setHelpUrl('http://www.example.com/');
   }
@@ -296,7 +321,7 @@ Blockly.Blocks['assign_varList'] = {
     this.appendValueInput("assign")
         .setCheck(null)
         .appendField(new Blockly.FieldTextInput("variable"), "var")
-        .appendField(new Blockly.FieldTextInput("tamLista1"), "tamLista1")
+        .appendField(new Blockly.FieldTextInput("valLista1"), "valLista1")
         .appendField("=");
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -311,8 +336,8 @@ Blockly.Blocks['assign_varMat'] = {
     this.appendValueInput("assign")
         .setCheck(null)
         .appendField(new Blockly.FieldTextInput("variable"), "var")
-        .appendField(new Blockly.FieldTextInput("tamLista1"), "tamLista1")
-        .appendField(new Blockly.FieldTextInput("tamLista2"), "tamLista2")
+        .appendField(new Blockly.FieldTextInput("valMatriz1"), "valMatriz1")
+        .appendField(new Blockly.FieldTextInput("valMatriz2"), "valMatriz2")
         .appendField("=");
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);

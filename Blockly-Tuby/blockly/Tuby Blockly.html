@@ -17,6 +17,7 @@
 <div> 
 <!-- core Blockly script and the core blocks set -->
 <script src="blockly_uncompressed.js"></script>
+<script src="savefile.js"></script>
 <!--script src="blocks_compressed.js"></script-->
 <!-- code generation for javascript --> 
 
@@ -104,6 +105,8 @@
     <block type="lists_create_mat"></block>
     <block type="assign_varList"></block>
     <block type="assign_varMat"></block>
+    <block type="use_varList"></block>
+    <block type="use_varMat"></block>
   </category>
 
 </xml>
@@ -129,15 +132,25 @@ var workspace = Blockly.inject('blocklyDiv',
 
 </div>
 
-<textarea id="textarea" rows="4" cols="50">
+<textarea id="textarea" rows="8" cols="60">
 </textarea> 
  <button onclick="myUpdateFunction()">Generar Codigo</button> 
+<button onclick='doDL(document.getElementById("textarea").value)'>Guardar Codigo</button>
 
 <!-- generates code function -->
 <script>
 function myUpdateFunction(event) {
   var code = Blockly.tuby.workspaceToCode(workspace);
   document.getElementById('textarea').value = code;
+}
+    
+
+</script>
+    
+<script type='text/javascript'>
+function doDL(s){
+    function dataUrl(data) {return "data:x-application/text," + escape(data);}
+    window.open(dataUrl(s));
 }
 </script>
 
