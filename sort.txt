@@ -1,0 +1,40 @@
+principal{
+  entero lista [5];
+  lista [0] = 3;
+  lista [1] = 1;
+  lista [2] = 2;
+  lista [3] = 5;
+  lista [4] = 4;
+  entero aux;
+  entero i;
+  i = 0;
+  mientras (i < 5){
+    salida lista [i];
+    i = i + 1;
+  }
+  entero j;
+  entero k;
+  j = 0;
+  k = 0;
+  mientras (j < 4){
+    mientras (k < (4 - j)){
+      si (lista [k] > lista [k+1]) {
+        aux = lista [k];
+        lista [k] = lista [k+1];
+        lista [k+1] = aux;
+
+      }
+
+      k = k + 1;
+    }
+    j = j + 1;
+  }
+  salida "Lista ordenada";
+  entero a;
+  a = 0;
+  mientras (a < 5){
+    salida lista [a];
+    a = a + 1;
+  }
+
+}

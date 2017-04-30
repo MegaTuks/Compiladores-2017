@@ -331,20 +331,41 @@ Blockly.tuby['lists_create'] = function(block) {
 
 Blockly.tuby['lists_create_mat'] = function(block) {
   var dropdown_type = block.getFieldValue('type');
-  var text_listname = block.getFieldValue('nomLista');
-  var text_listsize1 = block.getFieldValue('tamLista1');
-  var text_listsize2 = block.getFieldValue('tamLista2');
+  var text_listname = block.getFieldValue('nomMatriz');
+  var text_listsize1 = block.getFieldValue('tamMatriz1');
+  var text_listsize2 = block.getFieldValue('tamMatriz2');
   // TODO: Assemble tuby into code variable.
   var code = dropdown_type + ' ' + text_listname + ' [' + text_listsize1 + ']' + '[' + text_listsize2 + '];\n';
   return code;
 };
 
+Blockly.tuby['use_varList'] = function(block) {
+  var text_var = block.getFieldValue('nomLista');
+  var text_listval1 = block.getFieldValue('valLista1');
+
+  // TODO: Assemble tuby into code variable.
+  var code = text_var + ' [' + text_listval1 + ']';
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.tuby.ORDER_NONE];
+};
+
+Blockly.tuby['use_varMat'] = function(block) {
+  var text_var = block.getFieldValue('nomMatriz');
+  var text_listval1 = block.getFieldValue('valMatriz1');
+  var text_listval2 = block.getFieldValue('valMatriz2');
+  // TODO: Assemble tuby into code variable.
+  var code = text_var + ' [' + text_listval1 + ']' + '[' + text_listval2 + ']';
+  // TODO: Change ORDER_NONE to the correct strength.
+  return [code, Blockly.tuby.ORDER_NONE];
+};
+
 Blockly.tuby['assign_varList'] = function(block) {
   var argument0 = Blockly.tuby.valueToCode(block, 'assign',
       Blockly.tuby.ORDER_ASSIGNMENT) || 'NULL';
-  var text_var = block.getFieldValue('var');
-  var text_listsize1 = block.getFieldValue('tamLista1');
+  var text_var = block.getFieldValue('nomLista');
+  var text_listsize1 = block.getFieldValue('valLista1');
   var value_assign = Blockly.tuby.valueToCode(block, 'assign', Blockly.tuby.ORDER_ATOMIC);
+
   // TODO: Assemble tuby into code variable.
   var code = text_var + ' [' + text_listsize1 + ']' +  ' = ' + argument0 + ';\n';
   return code;
@@ -353,10 +374,11 @@ Blockly.tuby['assign_varList'] = function(block) {
 Blockly.tuby['assign_varMat'] = function(block) {
   var argument0 = Blockly.tuby.valueToCode(block, 'assign',
       Blockly.tuby.ORDER_ASSIGNMENT) || 'NULL';
-  var text_var = block.getFieldValue('var');
-  var text_listsize1 = block.getFieldValue('tamLista1');
-  var text_listsize2 = block.getFieldValue('tamLista2');
+  var text_var = block.getFieldValue('nomMatriz');
+  var text_listsize1 = block.getFieldValue('valMatriz1');
+  var text_listsize2 = block.getFieldValue('valMatriz2');
   var value_assign = Blockly.tuby.valueToCode(block, 'assign', Blockly.tuby.ORDER_ATOMIC);
+
   // TODO: Assemble tuby into code variable.
   var code = text_var + ' [' + text_listsize1 + ']' + '[' + text_listsize2 + ']' + ' = ' + argument0 + ';\n';
   return code;

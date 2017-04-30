@@ -31,7 +31,7 @@ Blockly.tuby['controls_if'] = function(block) {
   var argument = Blockly.tuby.valueToCode(block, 'IF' + n,
       Blockly.tuby.ORDER_NONE) || 'falso';
   var branch = Blockly.tuby.statementToCode(block, 'DO' + n);
-  var code = 'si (' + argument + ') {\n' + branch + '}';
+  var code = 'si (' + argument + ') {\n' + branch + '\n}\n';
   for (n = 1; n <= block.elseifCount_; n++) {
     argument = Blockly.tuby.valueToCode(block, 'IF' + n,
         Blockly.tuby.ORDER_NONE) || 'falso';
@@ -40,7 +40,7 @@ Blockly.tuby['controls_if'] = function(block) {
   }
   if (block.elseCount_) {
     branch = Blockly.tuby.statementToCode(block, 'ELSE');
-    code += ' si no {\n' + branch + '}';
+    code += ' si no {\n' + branch + '\n}';
   }
   return code + '\n';
 };
