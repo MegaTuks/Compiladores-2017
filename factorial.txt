@@ -1,0 +1,23 @@
+entero factorial;
+factorial = 1;
+
+funcion entero sacaFactorial (entero n){
+  entero i;
+  i = 1;
+  mientras (i < n + 1){
+    factorial = factorial * i;
+  }
+  retorno factorial;
+
+}
+
+principal{
+  entero fact;
+  entero resultado;
+  salida "Escribe numero del que quieras sacar factorial";
+  entrada fact;
+  resultado = sacaFactorial(fact);
+  salida "Resultado:";
+  salida resultado;
+
+}

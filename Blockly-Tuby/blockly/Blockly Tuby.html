@@ -44,6 +44,26 @@
 <script src="msg/js/en.js"></script>
 <!--structure of the toolbox-->
 <xml id="toolbox" style="display: none">
+    
+  <category name="Variables" colour="240">
+  	<block type="var_dec"></block>
+    <block type="assign_var"></block>
+    <block type="use_var"></block>
+    <block type="text"></block>
+
+  </category>
+  <sep gap="32"></sep>
+    
+<category name="Listas" colour="360">
+  	<block type="lists_create"></block>
+    <block type="lists_create_mat"></block>
+    <block type="assign_varList"></block>
+    <block type="assign_varMat"></block>
+    <block type="use_varList"></block>
+    <block type="use_varMat"></block>
+</category>
+  <sep gap="32"></sep>
+    
   <category name="Logica" colour="120">
   	<block type="logic_compare"></block>
   	<sep gap="20"></sep>
@@ -68,17 +88,8 @@
     <block type="math_arithmetic_par"></block>
   
   </category>
-  <sep gap="32"></sep>
+<sep gap="32"></sep>
 
-  <category name="Variables" colour="240">
-  	<block type="var_dec"></block>
-    <block type="assign_var"></block>
-    <block type="use_var"></block>
-    <block type="text"></block>
-    
-
-  </category>
-  <sep gap="32"></sep>
 
   <category name="Funciones" colour="280">
     <block type="proc"></block>
@@ -98,16 +109,8 @@
     <block type="procedures_input"></block>
 
   </category>
-  <sep gap="32"></sep>
 
-  <category name="Listas" colour="360">
-  	<block type="lists_create"></block>
-    <block type="lists_create_mat"></block>
-    <block type="assign_varList"></block>
-    <block type="assign_varMat"></block>
-    <block type="use_varList"></block>
-    <block type="use_varMat"></block>
-  </category>
+ 
 
 </xml>
 <!-- Injecting Blockly into an empty div. This script should be at the bottom of the page, or called by the onload event. -->

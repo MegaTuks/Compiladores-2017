@@ -1,0 +1,26 @@
+funcion entero fibonacci (entero n){
+  si (n < 2) {
+    retorno 1;
+    } 
+    si no {
+    entero a;
+    entero b;
+    a = fibonacci(n - 1);
+    b = fibonacci(n - 2);
+    retorno a + b;
+    }
+
+}
+
+principal{
+  entero fibo;
+  entero n;
+  n = 1;
+  mientras (n < 10){
+    fibo = fibonacci(n);
+    salida "Respuesta: ";
+    salida fibo;
+    n = n + 1;
+  }
+
+}

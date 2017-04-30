@@ -320,7 +320,7 @@ Blockly.Blocks['assign_varList'] = {
   init: function() {
     this.appendValueInput("assign")
         .setCheck(null)
-        .appendField(new Blockly.FieldTextInput("variable"), "var")
+        .appendField(new Blockly.FieldTextInput("nomLista"), "nomLista")
         .appendField(new Blockly.FieldTextInput("valLista1"), "valLista1")
         .appendField("=");
     this.setPreviousStatement(true, null);
@@ -335,7 +335,7 @@ Blockly.Blocks['assign_varMat'] = {
   init: function() {
     this.appendValueInput("assign")
         .setCheck(null)
-        .appendField(new Blockly.FieldTextInput("variable"), "var")
+        .appendField(new Blockly.FieldTextInput("nomMatriz"), "nomMatriz")
         .appendField(new Blockly.FieldTextInput("valMatriz1"), "valMatriz1")
         .appendField(new Blockly.FieldTextInput("valMatriz2"), "valMatriz2")
         .appendField("=");

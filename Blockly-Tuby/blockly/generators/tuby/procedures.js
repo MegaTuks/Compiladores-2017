@@ -203,7 +203,7 @@ Blockly.tuby['proc'] = function(block) {
 Blockly.tuby['return'] = function(block) {
   var value_returnval = Blockly.tuby.valueToCode(block, 'returnVal', Blockly.tuby.ORDER_ATOMIC);
   // TODO: Assemble tuby into code variable.
-  var code = 'retorno ' + value_returnval;
+  var code = 'retorno ' + value_returnval + ';\n';
   return code;
 };
 
