@@ -24,38 +24,41 @@ class claseCuboSemantico:
                      }
 
     def Semantica(self, operador, operando1, operando2):
-        #aux = int(operando1/10000)
-        #aux2 = int(operando2/10000)
-        #VerdaderoValor1 = operando1 - aux*10000
-        #VerdaderoValor2 = operando2 - aux2*10000
-        #IndexOP1 = 4
-        #IndexOP2 = 4
-        #if(VerdaderoValor1 >= 0 and VerdaderoValor1 <= 2500):
-        #    IndexOP1 = 0
-        #elif(VerdaderoValor1 >= 2501 and VerdaderoValor1 <= 5000):
-        #    IndexOP1 = 1
-        #elif(VerdaderoValor1 >= 5001 and VerdaderoValor1 <= 7500):
-        #    IndexOP1 = 2
-        #elif(VerdaderoValor1 >= 7501 and VerdaderoValor1 <= 10000): 
-        #    IndexOP1 = 3  
-        #if(VerdaderoValor2 >= 0 and VerdaderoValor2 <= 2500):
-        #    IndexOP2 = 0
-        #elif(VerdaderoValor2 >= 2501 and VerdaderoValor2 <= 5000):
-        #    IndexOP2 = 1
-        #elif(VerdaderoValor2 >= 5001 and VerdaderoValor2 <= 7500):
-        #    IndexOP2 = 2
-        #elif(VerdaderoValor2 >= 7501 and VerdaderoValor2 <= 10000): 
-        #    IndexOP2 = 3
-        try:
-        	IndexOP1 = self.DataTypes.index(operando1)
-        	IndexOP2 = self.DataTypes.index(operando2)
+        aux = int(operando1/10000)
+        aux2 = int(operando2/10000)
+        VerdaderoValor1 = operando1 - aux*10000
+        VerdaderoValor2 = operando2 - aux2*10000
+        IndexOP1 = 4
+        IndexOP2 = 4
+        if(VerdaderoValor1 >= 0 and VerdaderoValor1 <= 2500):
+            IndexOP1 = 0
+        elif(VerdaderoValor1 >= 2501 and VerdaderoValor1 <= 5000):
+            print("entero1")
+            IndexOP1 = 1
+        elif(VerdaderoValor1 >= 5001 and VerdaderoValor1 <= 7500):
+            IndexOP1 = 2
+        elif(VerdaderoValor1 >= 7501 and VerdaderoValor1 <= 10000): 
+            IndexOP1 = 3  
+        if(VerdaderoValor2 >= 0 and VerdaderoValor2 <= 2500):  
+            IndexOP2 = 0
+        elif(VerdaderoValor2 >= 2501 and VerdaderoValor2 <= 5000):
+            print("entero2")
+            IndexOP2 = 1
+        elif(VerdaderoValor2 >= 5001 and VerdaderoValor2 <= 7500):
+            IndexOP2 = 2
+        elif(VerdaderoValor2 >= 7501 and VerdaderoValor2 <= 10000): 
+            IndexOP2 = 3
+        # try:
+        # 	IndexOP1 = self.DataTypes.index(operando1)
+        # 	IndexOP2 = self.DataTypes.index(operando2)
 
-        except ValueError:
-        	IndexOP1 = 4
-        	IndexOP2 = 4
+        # except ValueError:
+        # 	IndexOP1 = 4
+        # 	IndexOP2 = 4
 
 
         if IndexOP1 < 5 and IndexOP2 < 5:
+            print("sem: ",operador, "IndexOP1: ",IndexOP1, "IndexOP2: ",IndexOP2)
             sem = self.Cubo[operador][IndexOP1][IndexOP2]
             if sem == 4:
                 print("\nERROR TYPE MISMATCH. Los operandos:", operando1, "y", operando2,
@@ -63,6 +66,7 @@ class claseCuboSemantico:
                 return 4
 
             else:
+                print("sem: ", sem)
                 return sem
 
         else:
@@ -188,6 +192,18 @@ class TablaConstantes:
     def imprimir(self):
         print("Constantes:",self.simbolos)
 
+class TablaTemporales:
+    def __init__(self):
+        self.simbolos = dict()
+
+    def insertar(self, id, tipo):
+        self.simbolos[id] = tipo
+
+    def buscar(self, id):
+        return self.simbolos.get(id)
+
+    def imprimir(self):
+        print("Constantes:",self.simbolos)
 
 #clase de procedimeintos en esta manejamos lo relacionado a funciones.
 class Procedimientos:
@@ -234,28 +250,28 @@ class MemoriaReal:
         self.cont_real = self.reales
         self.cont_car = self.caracteres
 
-    def insertaBooleano(self,valor):
+    def insertaBooleano(self):
         if(self.cont_bool < self.enteros):
             self.cont_bool = self.cont_bool + 1
             return self.cont_bool
         else:
             print("memoria fuera de limites")
 
-    def insertaEntero(self,valor):
+    def insertaEntero(self):
         if(self.cont_ent < self.reales):
             self.cont_ent = self.cont_ent + 1
             return self.cont_ent
         else:
             print("memoria fuera de limites")
     
-    def insertaReales(self,valor):
+    def insertaReales(self):
         if(self.cont_real < self.caracteres):
             self.cont_real = self.cont_real + 1
             return self.cont_real
         else:
             print("memoria fuera de limites")
 
-    def insertaCaracteres(self,memID,valor):
+    def insertaCaracteres(self):
         if(self.cont_car < self.caracteres + 2500):
             self.cont_car = self.cont_car + 1
             return self.cont_car
@@ -264,4 +280,29 @@ class MemoriaReal:
 
     def eliminaTemporales(self,topeBool, topeInt,topeReal, topeCar):
         print("funcion de borrado")
+
+class Monolito:      
+    def __init__(self):
+        self.Monolito = dict()
+        self.Constantes = dict()
+        self.stack = list()
+
+    def insertaActual(self, memID, value):
+        self.Monolito[memID] = value
+
+    def insertaConstante(self,memID,value):
+        self.Constantes[memID] = value
+
+    def buscar(self, id):
+        return self.Monolito.get(id)
+
+    def insertaStack(self):
+        toStack = dict(self.Monolito)
+        self.stack.append(toStack)
+
+    def popStack(self):
+      return self.stack.pop()
+
+
+
 

@@ -60,6 +60,7 @@ t_ignore = ' \t\n\r'
 tablaGlobal = TablaSimbolos()
 tablaSimbolosActual = tablaGlobal
 tablaConstantes = TablaConstantes()
+tablaTemporales = TablaTemporales()
 stackOperador = []  # se usa para guardar los operadores del momento
 stackOperando = []  # se usa para guardar las ,variables, constantes, temporales;
 stackSaltos = [] # stack saltos para guardar los saltos de GOTOF
@@ -76,9 +77,13 @@ temporales.append(None)
 indicetemporales = 0 #indice de las variables temporales.
 checkSemantica = claseCuboSemantico()
 cuadruplo = Cuadruplos()
-memoriaGlobal = MemoriaReal()
-memoriaLocal = MemoriaReal(10000)
+
 #FIN DE VARIABELS DE COMPILACION
+
+#VARIABLES DE MEMORIA
+memoriaGlobal = MemoriaReal()
+memoriaConstante =  MemoriaReal(20000)
+monolito = Monolito()
 
 # Tipo numerico que acepta numeros reales 
 def t_CONST_NUMERO_REAL(t):
@@ -113,18 +118,73 @@ def t_error(t):
     t.lexer.skip(1)
 
 def insertaConstante(iden,tipo):
-    global tablaConstantes
+    global tablaConstantes,memoriaConstante
     constante = iden
     existe = tablaConstantes.buscar(constante)
     if (existe is None):
+
         tablaConstantes.insertar(constante,tipo)
     else:
         print ("previamente insertada")
 
+def getMemId(tipo):
+    global memoriaGlobal
+    memID = 0
+    if (tipo == "real"):
+        memID = memoriaGlobal.insertaReales()
+    elif (tipo == "booleano"):
+        memID = memoriaGlobal.insertaBooleano()
+    elif (tipo == "caracter"):
+        memID = memoriaGlobal.insertaCaracteres()
+    elif (tipo == "entero"):
+        memID = memoriaGlobal.insertaEntero()
+    return memID
+
+def setTemporal(tipoNum):
+    global memoriaGlobal,monolito,tablaTemporales,indicetemporales
+    result = 't' + str(indicetemporales)
+    indicetemporales = indicetemporales + 1
+    memID = 0
+    tipo = ""
+    if(tipoNum == 0):
+        memID = memoriaGlobal.insertaBooleano()
+        tipo = "booleano"
+    elif(tipoNum == 1):
+        memID = memoriaGlobal.insertaEntero()
+        tipo = "entero"
+    elif (tipoNum == 2):
+        memID = memoriaGlobal.insertaReales()
+        tipo = "real"
+    elif (tipoNum == 3):
+        memID = memoriaGlobal.insertaCaracteres()
+        tipo = "caracter"
+    paraTabla = {'memID' : memID,'tipo':tipo}
+    tablaTemporales.insertar(result,tipo)
+    valor = setValor(tipo)
+    monolito.insertaActual(memID,valor)
+    return memID
+
+
+
+
+
+
+def setValor(tipo):
+    if (tipo == "real"):
+        return 0.0
+    elif (tipo == "booleano"):
+        return "falso"
+    elif (tipo == "caracter"):
+        return "n/a"
+    elif (tipo == "entero"):
+        return 0
+
 def makeParam(paramID, stackActual):
     global listaprocedimientos,cuadruplo
     print ("paramID: ", paramID)
+    print("stackActual: ",stackActual)
     lista = listaprocedimientos.buscar(paramID)
+    print("lista",lista)
     if (lista is None):
         print ("error en la funcion")
         raise SystemExit
@@ -134,7 +194,10 @@ def makeParam(paramID, stackActual):
         if(longitudTotal == 0):
             paramActual = -1
         else:
-            paramActual = longitudTotal - longitudActual + 1
+            print("longitudActual",longitudActual)
+            print("longitudTotal", longitudTotal)
+            paramActual = longitudTotal - longitudActual 
+            print("paramActual", paramActual)
         return paramActual
 
 
@@ -216,6 +279,7 @@ def p_Funcion(t):
     Funcion : FuncionAux PARENTESIS_IZQ FuncionA PARENTESIS_DER Bloque FinFuncion
     '''
 
+
 def p_FinFuncion(t):
     '''
     FinFuncion : 
@@ -234,7 +298,7 @@ def p_FuncionAux(t):
     '''
     FuncionAux : KEYWORD_FUNCION Tipo IDENTIFICADOR
     '''
-    global tablaSimbolosActual, tablaGlobal, nuevaFuncion,cuadruplo,inicioCuad
+    global tablaSimbolosActual, tablaGlobal, nuevaFuncion,cuadruplo,inicioCuad,memoriaGlobal, monolito
     funcion  = t[1]
     tipo =  t[2]
     identificador =  t[3]
@@ -243,7 +307,11 @@ def p_FuncionAux(t):
     if(existe is None):
         nuevaFuncion = identificador
         inicioCuad =  cuadruplo.CuadIndex() + 1
-        tablaSimbolosActual.insertar(identificador,funcion)
+        memID = getMemId(tipo)
+        valor = {'funcion':'funcion','tipo': tipo,'inicio':inicioCuad, 'memID': memID }
+        valorDefault = setValor(tipo)
+        monolito.insertaActual(memID,valorDefault)
+        tablaSimbolosActual.insertar(identificador, valor)
         tablaF.insertar(identificador,tipo)
         tablaSimbolosActual.agregarHijo(tablaF)
         tablaF.agregarPadre(tablaSimbolosActual)
@@ -259,15 +327,18 @@ def p_FuncionA(t):
     FuncionA : Tipo IDENTIFICADOR FuncionB
     | empty
     '''
-    global tablaSimbolosActual, tablaGlobal,listaParametros
+    global tablaSimbolosActual, tablaGlobal,listaParametros,monolito
     if(len(t) == 4):
         tipo = t[1]
         identificador = t[2]
         existe = tablaSimbolosActual.buscar(identificador)
         if(existe is None):
-            parametro = {identificador : tipo }
+            memID = getMemId(tipo)
+            valorDefault = setValor(tipo)
+            parametro = {'id':identificador,'tipo':tipo , 'memID':memID}
             listaParametros.append(parametro)
             tablaSimbolosActual.insertar(identificador, tipo)
+            monolito.insertaActual(memID,valorDefault)
         else:
             print("parametro declarado previamente, o variable global comparte su nombre")
             raise SystemExit
@@ -311,15 +382,20 @@ def p_Declaracion(t):
     '''
     Declaracion : Tipo IDENTIFICADOR DeclaracionA SEMICOLON
     '''
-    global tablaSimbolosActual, tablaGlobal
+    global tablaSimbolosActual, tablaGlobal,monolito
     tipo = t[1]
     identificador = t[2]
     existe = tablaSimbolosActual.buscar(identificador)
     existeArreglos = t[3]
     if(existe is None):
         if (t[3] is  None):
-            tablaSimbolosActual.insertar(identificador, tipo)
+            memID = getMemId(tipo)
+            valorDefault = setValor(tipo)
+            monolito.insertaActual(memID,valorDefault)
+            insert = {'tipo':tipo,'memID':memID}
+            tablaSimbolosActual.insertar(identificador, insert)
         else:
+            print("existeArreglo: ",existeArreglos)
             #si es matriz AQUI se corren funciones de matriz
             tablaSimbolosActual.insertar(identificador, tipo)
     else:
@@ -394,7 +470,9 @@ def p_LlamadaAux(t):
         print("Funcion no declarada")
         raise SystemExit
     else:
-        iden = listaprocedimientos.buscar(identificador)
+
+        iden = list(listaprocedimientos.buscar(identificador))
+        print("iden",iden)
         stackParam.append(iden)
         procedureName.append(identificador)
         print("stack de parametros: ",stackParam)
@@ -404,8 +482,13 @@ def p_LlamadaAux(t):
 
 def p_LlamadaFuncionA(t):
     '''
-    LlamadaFuncionA : Expresion LlamadaFuncionB
+    LlamadaFuncionA :  ParamAux  LlamadaFuncionB
     | empty
+    '''   
+
+def p_ParamAux(t):
+    '''
+    ParamAux : Expresion
     '''
     global cuadruplo,stackParam,procedureName,stackOperando
     listaPar = stackParam.pop()
@@ -419,6 +502,9 @@ def p_LlamadaFuncionA(t):
         expresion = stackOperando.pop()
         paramNo = 'param#' + str(param)
         cuadruplo.normalCuad('param', expresion, None, paramNo)
+        listaPar.pop()
+        print("listaPar", listaPar)
+        stackParam.append(listaPar)
 
 def p_LlamadaFuncionB(t):
     '''
@@ -485,9 +571,9 @@ def p_Terminal(t):
             print("variable no declarada")
             raise SystemExit
         else:
-            stackOperando.append(identificador)
+            stackOperando.append(existeGlobal['memID'])
     else:
-        stackOperando.append(identificador)
+        stackOperando.append(existe['memID'])
 
     #funcion a checar
 
@@ -651,30 +737,34 @@ def p_ValorEnt(t):
     '''
     ValorEnt : CONST_NUMERO_ENT
     '''
-    global tablaConstantes,stackOperando
+    global tablaConstantes,stackOperando,monolito
     existe = None
     existe = tablaConstantes.buscar(t[1])
     if (existe is None):
-        #memID = listaMemorias[2].insertaBooleano()
-        insertaConstante(t[1],"entero")
-        stackOperando.append(t[1])
+        memID = getMemId("entero")
+        val =  {"memID":memID, 'tipo':"entero"}
+        insertaConstante(t[1],val)
+        monolito.insertaConstante(memID,t[1])
+        stackOperando.append(memID)
     else:
-        stackOperando.append(t[1])
+        stackOperando.append(existe['memID'])
         
 
 def p_ValorReal(t):
     '''
     ValorReal : CONST_NUMERO_REAL
     '''
-    global tablaConstantes,stackOperando
+    global tablaConstantes,stackOperando,monolito
     existe = None
     existe = tablaConstantes.buscar(t[1])
     if (existe is None):
-        #memID = listaMemorias[2].insertaBooleano()
-        insertaConstante(t[1],"real")
-        stackOperando.append(t[1])
+        memID = getMemId("real")
+        val =  {"memID":memID, 'tipo':"real"}
+        insertaConstante(t[1],val)
+        stackOperando.append(memID)
+        monolito.insertaConstante(memID,t[1])
     else:
-        stackOperando.append(t[1])
+        stackOperando.append(existe['memID'])
 
 def p_ValorCar(t):
     '''
@@ -684,11 +774,12 @@ def p_ValorCar(t):
     existe = None
     existe = tablaConstantes.buscar(t[1])
     if (existe is None):
-        #memID = listaMemorias[2].insertaBooleano()
-        insertaConstante(t[1],"caracter")
-        stackOperando.append(t[1])
+        memID = getMemId("caracter")
+        val =  {"memID":memID, 'tipo':"caracter"}
+        insertaConstante(t[1],val)
+        stackOperando.append(memID)
     else:
-        stackOperando.append(t[1])
+        stackOperando.append(existe['memID'])
 
 def p_ValorBool(t):
     '''
@@ -698,11 +789,12 @@ def p_ValorBool(t):
     existe = None
     existe = tablaConstantes.buscar(t[1])
     if (existe is None):
-        #memID = listaMemorias[2].insertaBooleano()
-        insertaConstante(t[1],"booleano")
-        stackOperando.append(t[1])
+        memID = getMemId("real")
+        val =  {"memID":memID, 'tipo':"real"}
+        insertaConstante(t[1],val)
+        stackOperando.append(memID)
     else:
-        stackOperando.append(t[1])
+        stackOperando.append(existe['memID'])
 
 #cuadro principal de expresion
 def p_Expresion(t):
@@ -720,18 +812,16 @@ def p_ExpressionA(t):
     top = stackOperador[len(stackOperador) - 1]
     print("OPERADORES HASTA EL MOMENTO AND OR", stackOperador)
     if (top == '&&' or top == '||'):
-        temporales[indicetemporales] = "temporalExpresion"
         op = stackOperador.pop()
         oper2 = stackOperando.pop()
         oper1 = stackOperando.pop()
-        result = 't' + str(indicetemporales)
-        temporales.append(result)
-        stackOperando.append(result)
-        indicetemporales = indicetemporales + 1
+        sem = checkSemantica.Semantica(op,oper1,oper2)
+        memTemporal=setValor(sem)
+        stackOperando.append(memTemporal)
         #sem = checkSemantica.Semantica(op,oper1, oper2)
         ##RECUERDA, REPARA LA SEMANTICA AL FINAAAAL , FINAAAL , FINAAAL
         #  def normalCuad(self, operador=None, operando1=None, operando2=None, destino=None):
-        cuadruplo.normalCuad(op,oper1,oper2,result)
+        cuadruplo.normalCuad(op,oper1,oper2,memTemporal)
 
 
 
@@ -759,17 +849,18 @@ def p_ExpresA(t):
     top = stackOperador[len(stackOperador) - 1]
     print("OPERADORES HASTA EL MOMENTO COMPARATIVO", stackOperador)
     if (top == '<' or top == '>'):
-        temporales[indicetemporales] = "temporalExpres"
+        memTemporal = -1
         op = stackOperador.pop()
         oper2 = stackOperando.pop()
         oper1 = stackOperando.pop()
-        result = 't' + str(indicetemporales)
-        temporales.append(result)
-        stackOperando.append(result)
-        indicetemporales = indicetemporales + 1        
+        sem = checkSemantica.Semantica(op,oper1,oper2)
+        memTemporal = setTemporal(sem)
+
+        stackOperando.append(memTemporal)
+   
         #sem = checkSemantica.Semantica(op,oper1, oper2)
         ##RECUERDA, REPARA LA SEMANTICA AL FINAAAAL , FINAAAL , FINAAAL
-        cuadruplo.normalCuad(op,oper1,oper2,result)
+        cuadruplo.normalCuad(op,oper1,oper2,memTemporal)
 
 
 #carga los operadores comparativos
@@ -792,22 +883,22 @@ def p_ExpA(t):
     '''
     ExpA : ExpAux Termino
     '''
-    global checkSemantica, stackOperador, stackOperando, temporales, indicetemporales,cuadruplo
+    global checkSemantica, stackOperador, stackOperando, indicetemporales,cuadruplo
     top = stackOperador[len(stackOperador) - 1]
     print("OPERADORES HASTA EL MOMENTO + -", stackOperador)
     if (top == '+' or top == '-'):
-        temporales[indicetemporales] = "temporalExp"
         op = stackOperador.pop()
         oper2 = stackOperando.pop()
         oper1 = stackOperando.pop()
-        memID = 0
-        result = 't' + str(indicetemporales)
-        temporales.append(result)
-        stackOperando.append(result)
-        indicetemporales = indicetemporales + 1
+        memTemporal = -1
+        sem = checkSemantica.Semantica(op,oper1,oper2)
+        memTemporal = setTemporal(sem)
+        stackOperando.append(memTemporal)
+        print("op: ", op,"oper1: ",oper1,"oper2: ",oper2)
+       
         #sem = checkSemantica.Semantica(op,oper1, oper2)
         ##RECUERDA, REPARA LA SEMANTICA AL FINAAAAL , FINAAAL , FINAAAL
-        cuadruplo.normalCuad(op,oper1,oper2,result)
+        cuadruplo.normalCuad(op,oper1,oper2,memTemporal)
 
 
 
@@ -835,17 +926,15 @@ def p_TerminoA(t):
     top = stackOperador[len(stackOperador) - 1]
     print("OPERADORES HASTA EL MOMENTO * /", stackOperador)
     if (top == '*' or top == '/'):
-        temporales[indicetemporales] = "temporalTermino"
         op = stackOperador.pop()
         oper2 = stackOperando.pop()
         oper1 = stackOperando.pop()
-        result = 't' + str(indicetemporales)
-        temporales.append(result)
-        stackOperando.append(result)
-        indicetemporales = indicetemporales + 1
+        sem = checkSemantica.Semantica(op,oper1,oper2)
+        memTemporal = setTemporal(sem)
+        stackOperando.append(memTemporal)
         #sem = checkSemantica.Semantica(op,oper1, oper2)
         ##RECUERDA, REPARA LA SEMANTICA AL FINAAAAL , FINAAAL , FINAAAL
-        cuadruplo.normalCuad(op,oper1,oper2,result)
+        cuadruplo.normalCuad(op,oper1,oper2,memTemporal)
 
  
 #inserta los terminos * y / en el stack de operadores
