@@ -2,7 +2,7 @@ funcion entero fibonacci (entero n){
   si (n < 2) {
     retorno 1;
     } 
-    si no {
+    sino {
     entero a;
     entero b;
     a = fibonacci(n - 1);

@@ -40,7 +40,7 @@ Blockly.tuby['controls_if'] = function(block) {
   }
   if (block.elseCount_) {
     branch = Blockly.tuby.statementToCode(block, 'ELSE');
-    code += ' si no {\n' + branch + '\n}';
+    code += ' sino {\n' + branch + '\n}';
   }
   return code + '\n';
 };

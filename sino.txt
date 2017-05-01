@@ -5,7 +5,7 @@ principal{
   menor = 0;
   si (mayor > menor) {
     salida "Si es mayor!";
-  } si no {
+  } sino {
     salida "No deberias poder ver esto.";
   }
 }

@@ -24,7 +24,7 @@ principal{
     salida "Si se encontro el numero!";
 
   }
-   si no {
+   sino {
     salida "No se encontro el numero.";
 
   }
