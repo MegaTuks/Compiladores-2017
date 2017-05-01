@@ -48,12 +48,12 @@ Blockly.tuby['controls_if'] = function(block) {
 Blockly.tuby['logic_compare'] = function(block) {
   // Comparison operator.
   var OPERATORS = {
-    'EQ': '==',
+    'EQ': '~',
     'LT': '<',
     'GT': '>'
   };
   var operator = OPERATORS[block.getFieldValue('OP')];
-  var order = (operator == '==') ?
+  var order = (operator == '~') ?
       Blockly.tuby.ORDER_EQUALITY : Blockly.tuby.ORDER_RELATIONAL;
   var argument0 = Blockly.tuby.valueToCode(block, 'A', order) || '0';
   var argument1 = Blockly.tuby.valueToCode(block, 'B', order) || '0';

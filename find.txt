@@ -13,14 +13,14 @@ principal{
   salida "Teclea un numero del 1 al 10 que deseas encontrar.";
   entrada num;
   mientras (i < 5){
-    si (lista [i] == num) {
+    si (lista [i] ~ num) {
       busca = verdadero;
 
     }
 
     i = i + 1;
   }
-  si (busca == verdadero) {
+  si (busca ~ verdadero) {
     salida "Si se encontro el numero!";
 
   }

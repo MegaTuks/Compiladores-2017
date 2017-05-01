@@ -49,7 +49,7 @@ t_PARENTESIS_DER = r'\)'
 t_CORCHETE_IZQ = r'\['
 t_CORCHETE_DER = r'\]'
 t_OPERADOR_IGUAL = r'\='
-t_OPERADOR_COMPARATIVO = r'[>]|[<]'
+t_OPERADOR_COMPARATIVO = r'[>]|[<]|[~]'
 t_OPERADOR_AND_OR = r'&&|\|\|'
 t_EXP_OPERADOR = r'\+|\-'
 t_TERM_OPERADOR = r'\*|\/'
@@ -848,7 +848,7 @@ def p_ExpresA(t):
     global checkSemantica, stackOperador, stackOperando, temporales,indicetemporales,cuadruplo
     top = stackOperador[len(stackOperador) - 1]
     print("OPERADORES HASTA EL MOMENTO COMPARATIVO", stackOperador)
-    if (top == '<' or top == '>'):
+    if (top == '<' or top == '>' or top == '~'):
         memTemporal = -1
         op = stackOperador.pop()
         oper2 = stackOperando.pop()
