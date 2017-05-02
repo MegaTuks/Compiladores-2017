@@ -1,0 +1,44 @@
+principal(){
+  entero lista1 [3];
+  lista1 [0] = 4;
+  lista1 [1] = 2;
+  lista1 [2] = 9;
+  entero lista2 [3];
+  lista2 [0] = 6;
+  lista2 [1] = 2;
+  lista2 [2] = 4;
+  booleano bools [3];
+  bools [0] = falso;
+  bools [1] = falso;
+  bools [2] = falso;
+  entero i;
+  entero j;
+  i = 0;
+  j = 0;
+  mientras (i < 3){
+    mientras (j < 3){
+      si (lista1 [j] ~ lista2 [i]) {
+        bools [i] = verdadero;
+
+      }
+
+      j = j + 1;
+    }
+    i = i + 1;
+  }
+  i = 0;
+  salida "Los siguientes numeros:";
+  mientras (i < 3){
+    salida lista2 [i];
+    si (bools [i] ~ verdadero) {
+      salida "Si se encontro!";
+
+    }
+     sino {
+      salida "No se encontro.";
+
+    }
+    i = i + 1;
+  }
+
+}
