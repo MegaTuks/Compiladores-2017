@@ -145,7 +145,7 @@ Blockly.tuby['procedures_main2'] = function(block) {
   var statements_name = Blockly.tuby.statementToCode(block, 'NAME');
   statements_name = Blockly.tuby.addLoopTrap(statements_name, block.id);
   // TODO: Assemble tuby into code variable.
-  var code = 'principal{' + '\n' + statements_name + '\n}';
+  var code = 'principal(){' + '\n' + statements_name + '\n}';
   return code;
 };
 

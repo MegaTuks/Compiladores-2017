@@ -1,4 +1,4 @@
-principal{
+principal(){
   entero ent;
   entrada ent;
   salida ent;

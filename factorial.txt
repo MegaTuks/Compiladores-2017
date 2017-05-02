@@ -11,7 +11,7 @@ funcion entero sacaFactorial (entero n){
 
 }
 
-principal{
+principal(){
   entero fact;
   entero resultado;
   salida "Escribe numero del que quieras sacar factorial";
