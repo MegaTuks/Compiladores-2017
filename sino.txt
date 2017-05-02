@@ -1,4 +1,4 @@
-principal{
+principal(){
   entero mayor;
   entero menor;
   mayor = 1;
@@ -6,6 +6,6 @@ principal{
   si (mayor > menor) {
     salida "Si es mayor!";
   } sino {
-    salida "No deberias poder ver esto.";
+    salida "No";
   }
 }

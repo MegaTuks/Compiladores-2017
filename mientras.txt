@@ -1,8 +1,11 @@
-principal{
+principal(){
   entero a;
+  entero b[10];
+  entero c[2][5];
   a = 10;
-  mientras (a > 0){
-    a = a - 1;
+  mientras (a  > 0){
+    b[2] = a - 1;
+    a = a -1;
     salida a;
   }
 
