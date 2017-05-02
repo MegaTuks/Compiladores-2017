@@ -2,7 +2,7 @@ funcion real dobleParam (real a, real a){
 
 }
 
-principal{
+principal(){
   salida "Falla codigo.";
 
 }

@@ -12,7 +12,7 @@ funcion entero fibonacci (entero n){
 
 }
 
-principal{
+principal(){
   entero fibo;
   entero n;
   n = 1;

@@ -1,4 +1,4 @@
-principal{
+principal(){
   entero mat1 [2][2];
   entero mat2 [2][2];
   entero mat3 [2][2];

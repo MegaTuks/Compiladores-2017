@@ -4,7 +4,7 @@ funcion entero pruebaFuncion (entero a){
   retorno b;
 
 }
-principal{
+principal(){
   entero first;
   first = 5;
   pruebaFuncion( first);

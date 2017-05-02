@@ -1,0 +1,20 @@
+real a;
+a = 100;
+
+funcion real Func (real n){
+  real b;
+  b = 19;
+  real c;
+  c = (n - b) / a;
+  retorno c;
+
+}
+
+principal(){
+  real dd;
+  d = 10 + a;
+  real e;
+  e = Func( d);
+  salida e;
+
+}

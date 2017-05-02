@@ -1,4 +1,4 @@
-principal{
+principal(){
   entero a;
   a = 10;
   mientras (a > 0){

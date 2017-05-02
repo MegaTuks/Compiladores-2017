@@ -1,4 +1,4 @@
-principal{
+principal(){
   entero lista [5];
   lista [0] = 4;
   lista [1] = 2;

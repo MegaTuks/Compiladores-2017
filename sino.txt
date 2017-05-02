@@ -1,4 +1,4 @@
-principal{
+principal(){
   entero mayor;
   entero menor;
   mayor = 1;

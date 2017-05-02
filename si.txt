@@ -1,4 +1,4 @@
-principal{
+principal(){
   entero nope;
   nope = falso;
   si (nope ~ verdadero) {
