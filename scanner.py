@@ -140,6 +140,20 @@ def getMemId(tipo):
         memID = memoriaGlobal.insertaEntero()
     return memID
 
+def calcularMatrizId(tipo,izquierda, derecha):
+    global memoriaGlobal
+    total = izquierda * derecha
+    if (tipo == "real"):
+        memID = memoriaGlobal.insertaDimReales(total)
+    elif (tipo == "booleano"):
+        memID = memoriaGlobal.insertaDimBooleano(total)
+    elif (tipo == "caracter"):
+        memID = memoriaGlobal.insertaDimCaracteres(total)
+    elif (tipo == "entero"):
+        memID = memoriaGlobal.insertaDimEntero(total)
+    return memID
+
+
 def setTemporal(tipoNum):
     global memoriaGlobal,monolito,tablaTemporales,indicetemporales
     result = 't' + str(indicetemporales)
@@ -159,15 +173,26 @@ def setTemporal(tipoNum):
         memID = memoriaGlobal.insertaCaracteres()
         tipo = "caracter"
     paraTabla = {'memID' : memID,'tipo':tipo}
-    tablaTemporales.insertar(result,tipo)
+    tablaTemporales.insertar(result,paraTabla)
     valor = setValor(tipo)
     monolito.insertaActual(memID,valor)
     return memID
 
 
-
-
-
+def setValorDim(tipo,inicio,fin):
+    global monolito
+    if (tipo == "real"):
+        valor = 0.0
+    elif (tipo == "booleano"):
+        valor ="falso"
+    elif (tipo == "caracter"):
+        valor = "n/a"
+    elif (tipo == "entero"):
+        valor = 0
+    while (inicio < fin):
+        print("incio:", inicio)
+        monolito.insertaActual(inicio,valor)
+        inicio = inicio + 1
 
 def setValor(tipo):
     if (tipo == "real"):
@@ -226,6 +251,10 @@ def p_Programa(t):
     tablaConstantes.imprimir()
     cuadruplo.imprimir()
     listaprocedimientos.imprimir()
+    monolito.imprimir()
+    maquina = MaquinaVirtual()
+
+    maquina.Ejecutar(cuadruplo,monolito)
 
 #salto inicial del programa. 
 def p_ProgramaInicio(t):
@@ -387,6 +416,7 @@ def p_Declaracion(t):
     identificador = t[2]
     existe = tablaSimbolosActual.buscar(identificador)
     existeArreglos = t[3]
+    print("existeArreglos:", existeArreglos)
     if(existe is None):
         if (t[3] is  None):
             memID = getMemId(tipo)
@@ -396,8 +426,27 @@ def p_Declaracion(t):
             tablaSimbolosActual.insertar(identificador, insert)
         else:
             print("existeArreglo: ",existeArreglos)
-            #si es matriz AQUI se corren funciones de matriz
-            tablaSimbolosActual.insertar(identificador, tipo)
+            if(len(existeArreglos) == 2):
+                # calcular casillas
+                izquierda = existeArreglos['izquierda']
+                derecha = existeArreglos['derecha']
+                memID = calcularMatrizId(tipo, izquierda, derecha) 
+                valorDefault = setValor(tipo)
+                insert = {'tipo':tipo,'memID':memID['inicio'], 'inicio':memID['inicio'],'fin':memID['fin'],'izquierda':existeArreglos['izquierda'], 'derecha':existeArreglos['derecha'] }
+                #guardar en tabla de simbolos
+                tablaSimbolosActual.insertar(identificador, insert)
+                #meter valores default encasillas
+                setValorDim(tipo,memID['inicio'],memID['fin'])
+            else:
+                casillas = existeArreglos['casillas']
+                memID = calcularMatrizId(tipo, casillas, 1) 
+                valorDefault = setValor(tipo)
+                insert = {'tipo':tipo,'memID':memID['inicio'], 'inicio':memID['inicio'],'fin':memID['fin'],'casillas':existeArreglos['casillas'] }
+                #guardar en tabla de simbolos
+                tablaSimbolosActual.insertar(identificador, insert)
+                # calcular valores default en casillas
+                setValorDim(tipo,memID['inicio'],memID['fin'])
+                #guardar en tabla de simbolos
     else:
         print("Variable declarada previamente, o variable global comparte su nombre")
         raise SystemExit
@@ -408,8 +457,19 @@ def p_DeclaracionA(t):
     DeclaracionA : ArregloAux DeclaracionB
     | empty
     '''
-    if(len(t) == 2):
-        print("tiene dimension")
+    if(t[1] is  not None):
+        print("casilllas: ",t[1])
+        print("t[2]: ",t[2])
+        if(t[2] is None):
+            dimension = {'casillas': t[1]['casillas']}
+            t[0] = dimension
+            print("dimension", dimension)
+        else:
+            dimension = {'izquierda' : t[1]['casillas'], 'derecha':t[2]['casillas']}
+            t[0] = dimension
+            print("dimension", dimension)
+
+
         #t[0] = {'arreglo':t[1],'matriz':t[2] }
 
 def p_ArregloAux(t):
@@ -417,6 +477,7 @@ def p_ArregloAux(t):
     ArregloAux : CORCHETE_IZQ CONST_NUMERO_ENT CORCHETE_DER
     '''
     t[0] = {'casillas': t[2]}
+    print("casillas a guardar", t[0])
     
 def p_DeclaracionB(t):
     '''
@@ -430,17 +491,66 @@ def p_Asignacion(t):
     '''
     Asignacion : IDENTIFICADOR AsignacionA OPERADOR_IGUAL Expresion SEMICOLON
     '''
-    global tablaSimbolosActual,tablaGlobal,cuadruplo,stackOperando
+    global tablaSimbolosActual,tablaGlobal,cuadruplo,stackOperando,checkSemantica,monolito
     identificador = t[1]
     existe = tablaSimbolosActual.buscar(identificador)
     existeGlobal = tablaGlobal.buscar(identificador)
+
     if(existe is  None):
         if(existeGlobal is  None):
             print("VARIABLE no declarada previamente") 
             raise SystemExit
+        else:
+            print("longitud Global: ",len(existeGlobal))
+            if(len(existeGlobal) == 2):
+                op1 = stackOperando.pop
+                checkSemantica.Semantica('=',op1,existeGlobal['memID'])
+                cuadruplo.normalCuad('=',op1,None,existeGlobal['memID'])
+            elif(len(existeGlobal) == 5):
+                opExpresion = stackOperando.pop()
+                expresion =  monolito.buscar(opExpresion)
+                print("resultado a meter: ", expresion)
+                opResultado = stackOperando.pop()
+                expresionRes =  monolito.buscar(opResultado)
+                print("resultado?:", expresionRes )
+            elif(len(existeGlobal) == 6):
+                opExpresion = stackOperando.pop()
+                expRes =  monolito.buscar(opExpresion)
+                print("operacion a almacenar: ", opExpresion)
+                opExpresionDer = stackOperando.pop()
+                expDer =  monolito.buscar( opExpresionDer)
+                print("casilla derecha: ", opExpresionDer)
+                opExpresionIzq = stackOperando.pop()
+                expIzq = monolito.buscar(opExpresionIzq)
+                print("casilla izquierda: ",opExpresionIzq)
+                aAlmacenar = stackOperando.pop()
+
     else:
-        op1 = stackOperando.pop()
-        cuadruplo.normalCuad('=',op1,None,identificador)
+        print("longitud Local: ",len(existe))
+        if(len(existe) == 2):
+            op1 = stackOperando.pop()
+            checkSemantica.Semantica('=',op1,existe['memID'])
+            cuadruplo.normalCuad('=',op1,None,existe['memID'])
+        elif(len(existe) == 5):
+            opExpresion = stackOperando.pop()
+            expresion =  monolito.buscar(opExpresion)
+            print("resultado a meter: ", expresion)
+            opResultado = stackOperando.pop()
+            expresionRes =  monolito.buscar(opResultado)
+            print("resultado?:", expresionRes)
+        elif(len(existe) == 6):
+            opExpresion = stackOperando.pop()
+            expRes =  monolito.buscar(opExpresion)
+            print("operacion a almacenar: ", opExpresion)
+            opExpresionDer = stackOperando.pop()
+            expDer =  monolito.buscar( opExpresionDer)
+            print("casilla derecha: ", opExpresionDer)
+            opExpresionIzq = stackOperando.pop()
+            expIzq = monolito.buscar(opExpresionIzq)
+            print("casilla izquierda: ",opExpresionIzq)
+            aAlmacenar = stackOperando.pop()
+
+
 
 def p_AsignacionA(t):
     '''
@@ -523,8 +633,16 @@ def p_finLlamada(t):
 
 def p_Ciclo(t):
     '''
-    Ciclo : KEYWORD_MIENTRAS PARENTESIS_IZQ Expresion PARENTESIS_DER CicloAux Bloque FinCiclo
+    Ciclo : KEYWORD_MIENTRAS PARENTESIS_IZQ CicloInicio Expresion PARENTESIS_DER CicloAux Bloque FinCiclo
     '''
+def p_CicloInicio(t):
+    '''
+    CicloInicio : 
+    '''
+    global cuadruplo, stackSaltos
+    salto =  cuadruplo.CuadIndex() + 1
+    stackSaltos.append(salto)
+
 
 def p_CicloAux(t):
     '''
@@ -545,7 +663,8 @@ def p_FinCiclo(t):
     global tablaSimbolosActual,tablaGlobal,stackOperando,cuadruplo,stackSaltos
     #print("Cuadruplo Indice: ",cuadruplo.CuadIndex())
     indice = stackSaltos.pop()
-    cuadruplo.normalCuad('GOTO',None,None,indice)
+    regresoA = stackSaltos.pop()
+    cuadruplo.normalCuad('GOTO',None,None,regresoA)
     salto = cuadruplo.CuadIndex() + 1
     cuadruplo.InsertarSalto(indice,salto)
 
@@ -770,7 +889,7 @@ def p_ValorCar(t):
     '''
     ValorCar : CONST_CARACTERES
     '''
-    global tablaConstantes,stackOperando
+    global tablaConstantes,stackOperando,monolito
     existe = None
     existe = tablaConstantes.buscar(t[1])
     if (existe is None):
@@ -778,6 +897,7 @@ def p_ValorCar(t):
         val =  {"memID":memID, 'tipo':"caracter"}
         insertaConstante(t[1],val)
         stackOperando.append(memID)
+        monolito.insertaConstante(memID,t[1])
     else:
         stackOperando.append(existe['memID'])
 
@@ -789,8 +909,8 @@ def p_ValorBool(t):
     existe = None
     existe = tablaConstantes.buscar(t[1])
     if (existe is None):
-        memID = getMemId("real")
-        val =  {"memID":memID, 'tipo':"real"}
+        memID = getMemId("booleano")
+        val =  {"memID":memID, 'tipo':"booleano"}
         insertaConstante(t[1],val)
         stackOperando.append(memID)
     else:
@@ -816,7 +936,7 @@ def p_ExpressionA(t):
         oper2 = stackOperando.pop()
         oper1 = stackOperando.pop()
         sem = checkSemantica.Semantica(op,oper1,oper2)
-        memTemporal=setValor(sem)
+        memTemporal = setValor(sem)
         stackOperando.append(memTemporal)
         #sem = checkSemantica.Semantica(op,oper1, oper2)
         ##RECUERDA, REPARA LA SEMANTICA AL FINAAAAL , FINAAAL , FINAAAL
