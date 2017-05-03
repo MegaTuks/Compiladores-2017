@@ -1,0 +1,27 @@
+principal()
+{
+	entero n;
+	n = 10;
+	entero i;
+	i = 0;
+	entero j;
+	j = 0;
+	entero prim;
+	prim = 0;
+	entero sum;
+	sum = 1;
+
+	mientras(i<n)
+	{
+		si(i<2){
+			j = i;
+		}
+		sino{
+			j = prim + sum;
+			prim = sum;
+			sum = j;
+		}
+		salida j;
+		i = i + 1;
+	}
+}
