@@ -126,7 +126,7 @@ def insertaConstante(iden,tipo):
 
         tablaConstantes.insertar(constante,tipo)
     else:
-        print ("previamente insertada")
+        x = "la magia de disney"
 
 def getMemId(tipo):
     global memoriaGlobal
@@ -157,10 +157,8 @@ def calcularMatrizId(tipo,izquierda, derecha):
 
 def VerificadorCuad(diccionario, opExpresionArr,opExpArr2 = None):
     global checkSemantica,monolito,cuadruplo, stackOperando,tablaConstantes
-    print("opExpresionArr: ",opExpresionArr)
     val = checkSemantica.VerSemantica(opExpresionArr)
     if(len(diccionario) == 5):
-        print("es un arreglo")
         tope = diccionario['casillas'] - 1
         dirBase = diccionario['memID']
         cuadruplo.normalCuad('ver', opExpresionArr, 0, tope)
@@ -169,17 +167,13 @@ def VerificadorCuad(diccionario, opExpresionArr,opExpArr2 = None):
         temp = temp + 0.5
         stackOperando.append(temp)
     elif(len(diccionario) == 6):
-        print("Es una matriz")
         topeIzquierdo = diccionario['izquierda'] - 1
         topeDerecho = diccionario['derecha'] - 1
-        print("topeDerecho: ", topeDerecho)
         dirBase = diccionario['memID']
         cuadruplo.normalCuad('ver',opExpresionArr, 0, topeIzquierdo)
         cuadruplo.normalCuad('ver',opExpArr2,0,topeDerecho)
         #constante
         constanteDimension = tablaConstantes.buscar(diccionario['derecha'])
-        print('constanteDimension: ', constanteDimension)
-        print("derecha dic: ",diccionario['derecha'])
         tempo1 = setTemporal(1)
         cuadruplo.normalCuad('*',opExpresionArr,constanteDimension['memID'],tempo1)
         tempo2 = setTemporal(1)
@@ -226,7 +220,6 @@ def setValorDim(tipo,inicio,fin):
     elif (tipo == "entero"):
         valor = 0
     while (inicio <= fin):
-        print("incio:", inicio)
         monolito.insertaActual(inicio,valor)
         inicio = inicio + 1
 
@@ -242,10 +235,7 @@ def setValor(tipo):
 
 def makeParam(paramID, stackActual):
     global listaprocedimientos,cuadruplo
-    print ("paramID: ", paramID)
-    print("stackActual: ",stackActual)
     lista = listaprocedimientos.buscar(paramID)
-    print("lista",lista)
     if (lista is None):
         print ("error en la funcion")
         raise SystemExit
@@ -255,10 +245,7 @@ def makeParam(paramID, stackActual):
         if(longitudTotal == 0):
             paramActual = -1
         else:
-            print("longitudActual",longitudActual)
-            print("longitudTotal", longitudTotal)
             paramActual = longitudTotal - longitudActual 
-            print("paramActual", paramActual)
         return paramActual
 
 
@@ -357,7 +344,6 @@ def p_FinFuncion(t):
     '''
     global tablaGlobal, tablaSimbolosActual,nuevaFuncion,listaprocedimientos,listaParametros,cuadruplo,inicioCuad
     cuadruplo.normalCuad('RETU',None,None,None)
-    print("FIN FUNCION")
     destino = cuadruplo.CuadIndex()
     tablaSimbolosActual = tablaGlobal
     listaprocedimientos.meteParametros(nuevaFuncion, listaParametros)
@@ -476,7 +462,6 @@ def p_Declaracion(t):
     identificador = t[2]
     existe = tablaSimbolosActual.buscar(identificador)
     existeArreglos = t[3]
-    print("existeArreglos:", existeArreglos)
     if(existe is None):
         if (t[3] is  None):
             memID = getMemId(tipo)
@@ -485,7 +470,6 @@ def p_Declaracion(t):
             insert = {'tipo':tipo,'memID':memID}
             tablaSimbolosActual.insertar(identificador, insert)
         else:
-            print("existeArreglo: ",existeArreglos)
             if(len(existeArreglos) == 2):
                 # calcular casillas
                 izquierda = existeArreglos['izquierda']
@@ -519,16 +503,12 @@ def p_DeclaracionA(t):
     '''
 
     if(t[1] is  not None):
-        print("casilllas: ",t[1])
-        print("t[2]: ",t[2])
         if(t[2] is None):
             dimension = {'casillas': t[1]['casillas']}
             t[0] = dimension
-            print("dimension", dimension)
         else:
             dimension = {'izquierda' : t[1]['casillas'], 'derecha':t[2]['casillas']}
             t[0] = dimension
-            print("dimension", dimension)
 
 
         #t[0] = {'arreglo':t[1],'matriz':t[2] }
@@ -547,7 +527,6 @@ def p_ArregloAux(t):
         monolito.insertaConstante(memID,t[2])
 
     t[0] = {'casillas': t[2]}
-    print("casillas a guardar", t[0])
     
 def p_DeclaracionB(t):
     '''
@@ -565,13 +544,11 @@ def p_Asignacion(t):
     identificador = t[1]
     existe = tablaSimbolosActual.buscar(identificador)
     existeGlobal = tablaGlobal.buscar(identificador)
-    print("ASIGNACION")
     if(existe is  None):
         if(existeGlobal is  None):
             print("VARIABLE no declarada previamente") 
             raise SystemExit
         else:
-            print("longitud Global: ",len(existeGlobal))
             if(len(existeGlobal) == 2):
                 op1 = stackOperando.pop
                 checkSemantica.Semantica('=',op1,existeGlobal['memID'])
@@ -579,58 +556,42 @@ def p_Asignacion(t):
             elif(len(existeGlobal) == 5):
                 opExpresion = stackOperando.pop()
                 expresion =  monolito.buscar(opExpresion)
-                print("resultado a meter: ", expresion)
                 opArreglo = stackOperando.pop()
                 expresionArr =  monolito.buscar(opArreglo)
-                print("resultado?:", expresionArr )
                 VerificadorCuad(existeGlobal, opArreglo)
                 casillaActual = stackOperando.pop()
                 cuadruplo.normalCuad('=',opExpresion,None,casillaActual)
             elif(len(existeGlobal) == 6):
                 opExpresion = stackOperando.pop()
                 expRes =  monolito.buscar(opExpresion)
-                print("operacion a almacenar: ", opExpresion)
                 opExpresionDer = stackOperando.pop()
                 expDer =  monolito.buscar(opExpresionDer)
-                print("casilla derecha: ", opExpresionDer)
                 opExpresionIzq = stackOperando.pop()
                 expIzq = monolito.buscar(opExpresionIzq)
-                print("casilla izquierda: ",opExpresionIzq)
                 VerificadorCuad(existeGlobal,opExpresionIzq, opExpresionDer)
                 aAlmacenar = stackOperando.pop()
                 cuadruplo.normalCuad('=',opExpresion,None,aAlmacenar)
 
     else:
-        print("longitud Local: ",len(existe))
         if(len(existe) == 2):
             op1 = stackOperando.pop()
-            print ("HOLA BUBALUBS")
-            print (op1)
-            print (existe['memID'])
             checkSemantica.Semantica('=',op1,existe['memID'])
             cuadruplo.normalCuad('=',op1,None,existe['memID'])
         elif(len(existe) == 5):
             opExpresion = stackOperando.pop()
             expresion =  monolito.buscar(opExpresion)
-            print("resultado a meter: ", expresion)
-            print("DIRECCION DE MEMORIA:",opExpresion)
             opArreglo = stackOperando.pop()
             expresionArr =  monolito.buscar(opArreglo)
-            print("resultado?:", expresionArr)
-            print("DIRECCION DE MEMORIA:", opArreglo)
             VerificadorCuad(existe, opArreglo)
             casillaActual = stackOperando.pop()
             cuadruplo.normalCuad('=',opExpresion,None,casillaActual)
         elif(len(existe) == 6):
             opExpresion = stackOperando.pop()
             expRes =  monolito.buscar(opExpresion)
-            print("operacion a almacenar: ", opExpresion)
             opExpresionDer = stackOperando.pop()
             expDer =  monolito.buscar(opExpresionDer)
-            print("casilla derecha: ", opExpresionDer)
             opExpresionIzq = stackOperando.pop()
             expIzq = monolito.buscar(opExpresionIzq)
-            print("casilla izquierda: ",opExpresionIzq)
             VerificadorCuad(existe,opExpresionIzq,opExpresionDer)
             aAlmacenar = stackOperando.pop()
             cuadruplo.normalCuad('=',opExpresion,None,aAlmacenar)
@@ -665,14 +626,11 @@ def p_LlamadaAux(t):
         print("Funcion no declarada")
         raise SystemExit
     else:
-        print("iden",identificador)
         listaprocedimientos.imprimir()
-        print("listaprocedimientos: ", listaprocedimientos.buscar(identificador))
         iden = list(listaprocedimientos.buscar(identificador))
         
         stackParam.append(iden)
         procedureName.append(identificador)
-        print("stack de parametros: ",stackParam)
         cuadruplo.normalCuad('ERA', identificador, None, None)
 
 
@@ -693,14 +651,13 @@ def p_ParamAux(t):
     param = makeParam(iden, listaPar)
     procedureName.append(iden)
     if (param == -1):
-        print("Funcion Sin parametros")
+        x=0
     else:
 
         expresion = stackOperando.pop()
         paramNo = 'param#' + str(param)
         cuadruplo.normalCuad('param', expresion, None, paramNo)
         listaPar.pop()
-        print("listaPar", listaPar)
         stackParam.append(listaPar)
 
 def p_LlamadaFuncionB(t):
@@ -716,11 +673,7 @@ def p_finLlamada(t):
     global cuadruplo, stackOperando,procedureName, tablaSimbolosActual, tablaGlobal
     iden =  procedureName.pop()
     cuadruplo.normalCuad('gosub', iden, None, None)
-    print ("HOLA RUBY")
-    print (iden)
     existe = tablaGlobal.buscar(iden)
-    print ("HOLA DUBS")
-    print (existe['memID'])
     stackOperando.append(existe['memID']) 
 
 
@@ -747,7 +700,6 @@ def p_CicloAux(t):
     cuadruplo.normalCuad("GOTOF",op,None,None)
     salto = cuadruplo.CuadIndex()
     stackSaltos.append(salto)
-    print("Ciclo")
 
 def p_FinCiclo(t):
     '''
@@ -832,7 +784,6 @@ def p_Condicion(t):
     '''
     Condicion : CondicionSi CondicionA
     '''
-    print('entre a condicion')
 
 def p_CondicionSi(t):
     '''
@@ -844,14 +795,12 @@ def p_CondicionSi(t):
     cuadruplo.normalCuad("GOTOF",op,None,None)
     salto = cuadruplo.CuadIndex()
     stackSaltos.append(salto)
-    print("CondicionSi")
 
 def p_CondicionA(t):
     '''
     CondicionA : Bloque CondicionSino
     |  Bloque
     '''
-    print('entraste CondicionA?')
     global cuadruplo,stackOperando,stackSaltos
     indice = stackSaltos.pop()
     salto = cuadruplo.CuadIndex()
@@ -1026,7 +975,6 @@ def p_ValorBool(t):
     existe = None
     existe = tablaConstantes.buscar(t[1])
     if (existe is None):
-        print("booleano es: ",t[1])
         memID = getMemId("booleano")
         val =  {"memID":memID, 'tipo':"booleano"}
         insertaConstante(t[1],val)
@@ -1049,7 +997,6 @@ def p_ExpressionA(t):
     '''
     global checkSemantica, stackOperador, stackOperando,temporales,indicetemporales,cuadruplo
     top = stackOperador[len(stackOperador) - 1]
-    print("OPERADORES HASTA EL MOMENTO AND OR", stackOperador)
     if (top == '&&' or top == '||'):
         op = stackOperador.pop()
         oper2 = stackOperando.pop()
@@ -1086,7 +1033,6 @@ def p_ExpresA(t):
     '''
     global checkSemantica, stackOperador, stackOperando, temporales,indicetemporales,cuadruplo
     top = stackOperador[len(stackOperador) - 1]
-    print("OPERADORES HASTA EL MOMENTO COMPARATIVO", stackOperador)
     if (top == '<' or top == '>' or top == '~'):
         memTemporal = -1
         op = stackOperador.pop()
@@ -1124,7 +1070,6 @@ def p_ExpA(t):
     '''
     global checkSemantica, stackOperador, stackOperando, indicetemporales,cuadruplo
     top = stackOperador[len(stackOperador) - 1]
-    print("OPERADORES HASTA EL MOMENTO + -", stackOperador)
     if (top == '+' or top == '-'):
         op = stackOperador.pop()
         oper2 = stackOperando.pop()
@@ -1133,7 +1078,6 @@ def p_ExpA(t):
         sem = checkSemantica.Semantica(op,oper1,oper2)
         memTemporal = setTemporal(sem)
         stackOperando.append(memTemporal)
-        print("op: ", op,"oper1: ",oper1,"oper2: ",oper2)
        
         #sem = checkSemantica.Semantica(op,oper1, oper2)
         ##RECUERDA, REPARA LA SEMANTICA AL FINAAAAL , FINAAAL , FINAAAL
@@ -1163,7 +1107,6 @@ def p_TerminoA(t):
     '''
     global checkSemantica, stackOperador, stackOperando,temporales,indicetemporales,cuadruplo
     top = stackOperador[len(stackOperador) - 1]
-    print("OPERADORES HASTA EL MOMENTO * /", stackOperador)
     if (top == '*' or top == '/'):
         op = stackOperador.pop()
         oper2 = stackOperando.pop()
@@ -1205,4 +1148,3 @@ with open(fileload) as fileval:
   result = parser.parse(fileval.read())
   lexer.input(fileval.read())
 
-print(result)

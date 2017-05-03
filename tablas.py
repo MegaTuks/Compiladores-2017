@@ -27,9 +27,7 @@ class claseCuboSemantico:
       aux = int(operando1 / 10000)
       VerdaderoValor1 = operando1 - aux * 10000
       IndexOP1 = 4
-      print("VerdaderoValor1: ", VerdaderoValor1)
       if(VerdaderoValor1 >= 2501 and VerdaderoValor1 <= 5000):
-          print("entero1")
           IndexOP1 = 1
       if(IndexOP1 == 4):
           print("Variables dimensionadas necesitan valores enteros para indexar!")
@@ -66,7 +64,6 @@ class claseCuboSemantico:
         if(VerdaderoValor1 >= 0 and VerdaderoValor1 <= 2500):
             IndexOP1 = 0
         elif(VerdaderoValor1 >= 2501 and VerdaderoValor1 <= 5000):
-            print("entero1")
             IndexOP1 = 1
         elif(VerdaderoValor1 >= 5001 and VerdaderoValor1 <= 7500):
             IndexOP1 = 2
@@ -75,7 +72,6 @@ class claseCuboSemantico:
         if(VerdaderoValor2 >= 0 and VerdaderoValor2 <= 2500):  
             IndexOP2 = 0
         elif(VerdaderoValor2 >= 2501 and VerdaderoValor2 <= 5000):
-            print("entero2")
             IndexOP2 = 1
         elif(VerdaderoValor2 >= 5001 and VerdaderoValor2 <= 7500):
             IndexOP2 = 2
@@ -91,7 +87,6 @@ class claseCuboSemantico:
 
 
         if IndexOP1 < 5 and IndexOP2 < 5:
-            print("sem: ",operador, "IndexOP1: ",IndexOP1, "IndexOP2: ",IndexOP2)
             sem = self.Cubo[operador][IndexOP1][IndexOP2]
             if sem == 4:
                 if(IndexOP1 == 0):
@@ -112,16 +107,14 @@ class claseCuboSemantico:
                 elif(IndexOP2 == 3):
                   tipoB = "caracter"
                 print("ERROR TIPOS DE DATOS", tipoA, " y ", tipoB, "NO son compatibles con el operador" ,operador)
-
-
                 raise SystemExit
                 return 4
             else:
-                print("sem: ", sem)
                 return sem
 
         else:
             print("\nERROR. Tipos de datos:", operando1, ",", operando2, "y/o operador:", operador, "desconocidos.")
+            raise SystemExit
             return None
 
 class Cuadruplos:
@@ -130,7 +123,6 @@ class Cuadruplos:
 
     def normalCuad(self, operador=None, operando1=None, operando2=None, destino=None):
         self.cuadruplos.append((operador, operando1, operando2, destino))
-        print("operador:" ,operador , " op1:",operando1, " op2:", operando2 , " destino:",destino)
 
     def updateCuad(self, index, operador=None, operando1=None, operando2=None, destino=None):
         self.cuadruplos[index] = (operador, operando1, operando2, destino)
@@ -140,7 +132,6 @@ class Cuadruplos:
 
     def SaltaCuad(self, Goto, destino=None):
       self.cuadruplos.append((Goto, None, "1", destino))
-      print("ver como codigicar saltos")
 
     def CuadIndex(self):
       return len(self.cuadruplos) - 1
@@ -155,7 +146,6 @@ class Cuadruplos:
         destino = len(self.cuadruplos)
       salto = (self.cuadruplos[indice][0], expr, "2", destino)
       self.cuadruplos[indice] = salto
-      print("darle update al cuadruplo")
 
     def EspecialCuad(self, operador, operando1, operando2, destino):
         print("cuadruplo a usar en funciones especiales")
@@ -264,7 +254,6 @@ class Procedimientos:
 
     def normalLista(self, id, cuadinicio,cuadruplofin):
         self.procedimientos.append((id, self.listParam[id], cuadinicio,cuadruplofin))
-        print("ID Procedimiento:" , id, " # Param:", self.listParam[id] , "inicio:",cuadinicio ,"Final:", cuadruplofin)
 
     def updateLista(self, index, id, parametros, variables, destino):
         self.procedimientos[index] = (id, parametros, variables, destino)
@@ -326,6 +315,7 @@ class MemoriaReal:
             return self.cont_bool
         else:
             print("memoria fuera de limites")
+            raise SystemExit
 
     def insertaEntero(self):
         if(self.cont_ent < self.reales):
@@ -333,6 +323,7 @@ class MemoriaReal:
             return self.cont_ent
         else:
             print("memoria fuera de limites")
+            raise SystemExit
     
     def insertaReales(self):
         if(self.cont_real < self.caracteres):
@@ -340,6 +331,7 @@ class MemoriaReal:
             return self.cont_real
         else:
             print("memoria fuera de limites")
+            raise SystemExit
 
     def insertaCaracteres(self):
         if(self.cont_car < self.caracteres + 2500):
@@ -347,6 +339,7 @@ class MemoriaReal:
             return self.cont_car
         else:
             print("memoria fuera de limites")
+            raise SystemExit
 
     def insertaDimBooleano(self,total):
         if(self.cont_bool + total < self.enteros):
@@ -357,6 +350,7 @@ class MemoriaReal:
             return retorno
         else:
             print("memoria fuera de limites")
+            raise SystemExit
 
     def insertaDimEntero(self,total):
         if(self.cont_ent + total < self.reales):
@@ -367,6 +361,7 @@ class MemoriaReal:
             return retorno
         else:
             print("memoria fuera de limites")
+            raise SystemExit
 
     def insertaDimReales(self,total):
         if(self.cont_real + total < self.caracteres):
@@ -431,7 +426,6 @@ class MaquinaVirtual:
     stackIndicesFinales = []
     stackERA = []
     stackParam = 0
-    print(cuadruplo.cuadruplos[0][0])
     while(True):
       indiceTemporal = 0
       operador = cuadruplo.cuadruplos[indiceActual][0]
@@ -457,43 +451,26 @@ class MaquinaVirtual:
       elif(operador == "GOTO"):
         indiceTemporal = Goto(cuad,mon) 
       elif(operador == "gosub"):
-        print("run Gosub")
         stackParam = 0
         stackIndices.append(indiceActual+1)
-        print ("-----regreso a donde se cargo funcion----. ")
-        print (stackIndices)
         indiceTemporal = Gosub(cuad,proc)
-
       elif(operador == "RETU"):
-        print("run RETU")
         nuevoIndice = stackIndices.pop()
         indiceTemporal = nuevoIndice - 1
 
       elif(operador == "ERA"):
-        print("run ERA")
         final = ERA(cuad,proc)
-        print (final)
         stackIndicesFinales.append(final)
-        print ("-----direcciones de retorno al terminar funcion----. ")
-        print (stackIndicesFinales)
         stackERA.append(cuad[1])
-        print (stackERA)
-
       elif(operador == "param"):
         stackParam = stackParam + 1
         nega = stackParam * -1
         func = stackERA[-1]
-        print (nega)
         Param(cuad, mon, proc, func, nega)
-        print (func)
-
       elif(operador == "ret"):
-        print("run retorno")
-        print (stackERA)
         idFun = stackERA.pop()
         Retorno(cuad, mon, proc, glob, idFun)
         indiceTemporal = stackIndicesFinales.pop() - 1
-        
       elif(operador == "&&"):
         AndOp(cuad,mon)
       elif(operador == "||"):
@@ -503,7 +480,6 @@ class MaquinaVirtual:
       elif(operador == "<"):
         MenorQue(cuad,mon)
       elif(operador == "~"):
-        print("igual que")
         IgualQue(cuad,mon)
       ##Funciones de arreglos
       elif(operador == "ver"):
@@ -541,7 +517,7 @@ def Suma(cuadruplo,monolito):
     existe2 = monolito.buscar(operando2)
     existeres = monolito.buscar(resultado)
     almacenar = existe + existe2
-    print("operando1: ", existe, " + ", existe2, " = ", almacenar)
+    #print("operando1: ", existe, " + ", existe2, " = ", almacenar)
     monolito.insertaActual(resultado,almacenar)
 
 
@@ -566,7 +542,7 @@ def Resta(cuadruplo,monolito):
     existe2 = monolito.buscar(operando2)
     existeres = monolito.buscar(resultado)
     almacenar = existe - existe2
-    print("operando1: ", existe, " - ", existe2, " = ", almacenar)
+    #print("operando1: ", existe, " - ", existe2, " = ", almacenar)
     monolito.insertaActual(resultado,almacenar)
 
 def Multiplicacion(cuadruplo,monolito):
@@ -590,7 +566,7 @@ def Multiplicacion(cuadruplo,monolito):
     existe2 = monolito.buscar(operando2)
     existeres = monolito.buscar(resultado)
     almacenar = existe * existe2
-    print("operando1: ", existe, " * ", existe2, " = ", almacenar)
+    #print("operando1: ", existe, " * ", existe2, " = ", almacenar)
     monolito.insertaActual(resultado,almacenar)
 
 def Division(cuadruplo,monolito):
@@ -618,7 +594,7 @@ def Division(cuadruplo,monolito):
       raise SystemExit
     else:
       almacenar = existe / existe2
-      print("operando1: ", existe, "/ ", existe2, "=", almacenar)
+      #print("operando1: ", existe, "/ ", existe2, "=", almacenar)
     monolito.insertaActual(resultado,almacenar)
 
 def MayorQue(cuadruplo,monolito):
@@ -645,7 +621,7 @@ def MayorQue(cuadruplo,monolito):
       almacenar = "verdadero"
     else:
       almacenar = "falso"
-    print(existe, " :MAYOR QUE: ", existe2)
+    #print(existe, " :MAYOR QUE: ", existe2)
     monolito.insertaActual(resultado,almacenar)
 
 def MenorQue(cuadruplo,monolito):
@@ -672,16 +648,13 @@ def MenorQue(cuadruplo,monolito):
       almacenar = "verdadero"
     else:
       almacenar = "falso"
-    print(existe, " :MENOR QUE: ",existe2)
+    #print(existe, " :MENOR QUE: ",existe2)
     monolito.insertaActual(resultado,almacenar)  
 
 def IgualQue(cuadruplo,monolito):
     operando1 = cuadruplo[1]
-    print("operando1", operando1)
     operando2 =  cuadruplo[2]
-    print("operando2", operando2)
     resultado =  cuadruplo[3]
-    print("res", resultado)
     #validar que sean direcciones de tener algun valor real saldran diferentes en la comparacion
     #indicando que esa temporal almacena la direccion de memoria indicada
     checaOperando1 = int(operando1)
@@ -696,16 +669,13 @@ def IgualQue(cuadruplo,monolito):
       resultado = monolito.buscar(checaResultado)
     #fin de la obtencion de direcciones 
     existe = monolito.buscar(operando1)
-    print("operando1:" ,existe)
     existe2 = monolito.buscar(operando2)
-    print("opearndo2:" ,existe2)
     existeres = monolito.buscar(resultado)
-    print("resultado", existeres)
     if(existe == existe2):
       almacenar = "verdadero"
     else:
       almacenar = "falso"
-    print(existe, " :IGUAL QUE: ",existe2, "Respuesta: ", almacenar)
+    #print(existe, " :IGUAL QUE: ",existe2, "Respuesta: ", almacenar)
     monolito.insertaActual(resultado,almacenar)  
 
 def AndOp(cuadruplo,monolito):
@@ -740,7 +710,7 @@ def AndOp(cuadruplo,monolito):
       existeres =  "verdadero"
     else:
       existeres = "falso"
-    print("cuadruplo AND : operador1: ", existe, "operando2", existe2, "resultado: ", existeres)
+    #print("cuadruplo AND : operador1: ", existe, "operando2", existe2, "resultado: ", existeres)
     monolito.insertaActual(resultado,existeres)
 
 def OrOp(cuadruplo,monolito):
@@ -775,32 +745,27 @@ def OrOp(cuadruplo,monolito):
       existeres =  "verdadero"
     else:
       existeres = "falso"
-    print("cuadruplo OR : operador1: ", existe, "operando2", existe2,"resultado: ",existeres)
+    #print("cuadruplo OR : operador1: ", existe, "operando2", existe2,"resultado: ",existeres)
     monolito.insertaActual(resultado,existeres)
 
 def Entrada(cuadruplo,monolito):
   ## ver como funciona luego
     operando1 = cuadruplo[1]
-    print(operando1)
     aux = int(operando1 / 10000)
     VerdaderoValor1 = operando1 - aux * 10000
     IndexOP1 = 4
     if (VerdaderoValor1 >= 0 and VerdaderoValor1 <= 2500):
-        IndexOP1 = 0  
+        IndexOP1 = 0
+        valor = bool(input())  
     elif (VerdaderoValor1 >= 2501 and VerdaderoValor1 <= 5000):
         IndexOP1 = 1
+        valor = int(input())
     elif (VerdaderoValor1 >= 5001 and VerdaderoValor1 <= 7500):
         IndexOP1 = 2
+        valor = float(input())
     elif (VerdaderoValor1 >= 7501 and VerdaderoValor1 <= 10000):
         IndexOP1 = 3
-    valor = input()
-    isValid = False
-    if((type(valor) is str ) and IndexOP1 == 3):
-      isValid = True
-    elif((type(valor) is int ) and IndexOP1 == 1):
-      isValid = True
-    elif((type(valor) is float)and IndexOP1 == 2):
-      isValid = True
+        valor = input()
     
 
     #validar que sean direcciones de tener algun valor real saldran diferentes en la comparacion
@@ -810,14 +775,12 @@ def Entrada(cuadruplo,monolito):
     if(checaOperando1 != operando1):
       operando1 = monolito.buscar(checaOperando1)
 
-    if(isValid == False):
-      print("entrada no valida tipos incompatibles")
+    #if(isValid == False):
+     # print("entrada no valida tipos incompatibles")
+      #raise SystemExit
     #fin de la obtencion de direcciones 
-    print("operando1", operando1)
     existe = monolito.buscar(operando1)
-    print("operando1:" ,existe)
     monolito.insertaActual(operando1,valor)
-    print("resultado = ", monolito.buscar(operando1))
 
 def Salida(cuadruplo, monolito):
     ## ver como funciona luego
@@ -830,8 +793,9 @@ def Salida(cuadruplo, monolito):
       operando1 = monolito.buscar(checaOperando1)
     #fin de la obtencion de direcciones 
     existe = monolito.buscar(operando1)
-    print("Salida =  operando1:" ,existe)
+    #NO BORRAR
     print(existe)
+    #^^^^^^^^^^
 
 def Asignar( cuadruplo,monolito):
     operando1 = cuadruplo[1]
@@ -847,10 +811,9 @@ def Asignar( cuadruplo,monolito):
       resultado = monolito.buscar(checaResultado)
     #fin de la obtencion de direcciones 
     existe = monolito.buscar(operando1)
-    print("operando1:" ,existe)
     existeres = monolito.buscar(resultado)
     monolito.insertaActual(resultado,existe)
-    print("Asignacion   Direccion: ",resultado, "valor: ",existe )
+    #print("Asignacion   Direccion: ", resultado, "valor: ", existe )
 
 def GotoT(cuadruplo, monolito,indice):
     operando1 = cuadruplo[1]
@@ -860,22 +823,19 @@ def GotoT(cuadruplo, monolito,indice):
     if(checaOperando1 != operando1):
       operando1 = monolito.buscar(checaOperando1)
     resultado =  cuadruplo[3]
-    print("res", resultado)
     existe = monolito.buscar(operando1)
-    print("operando1:" ,existe)
     existeres = monolito.buscar(resultado)
-    print("existeres",existeres)
     if(existe == "verdadero"):
       indice = resultado - 1
     else:
       indice = indice
     #monolito.insertaActual(resultado,existe)
-    print("GotoF = operando1: ",existe," hacia a ", indice)
+    #print("GotoF = operando1: ",existe," hacia a ", indice)
     return indice
 
 def GotoF(cuadruplo, monolito,indice):
     operando1 = cuadruplo[1]
-    print("operando1:es", operando1)
+    #print("operando1:es", operando1)
     #indicando que esa temporal almacena la direccion de memoria indicada
     checaOperando1 = int(operando1)
     #validar si es direccion o llave y transformarlo en la llave que es
@@ -883,30 +843,30 @@ def GotoF(cuadruplo, monolito,indice):
       operando1 = monolito.buscar(checaOperando1)
     resultado =  cuadruplo[3]
     existe = monolito.buscar(operando1)
-    print("el existe es: ",existe)
+    #print("el existe es: ",existe)
     if(existe == "falso"):
-      print("es falso, salto a :" ,resultado)
+      #print("es falso, salto a :" ,resultado)
       indice = resultado - 1
     else:
       indice = indice
     #monolito.insertaActual(resultado,existe)
-    print("GotoF = operando1: ",existe," hacia a", indice)
+    #print("GotoF = operando1: ",existe," hacia a", indice)
     return indice
 
 def Goto(cuadruplo, monolito):
     resultado =  cuadruplo[3]
-    print("GOTO", resultado)
+    #print("GOTO", resultado)
     return resultado - 1
     #monolito.insertaActual(resultado,existe)
 
 def Gosub(cuadruplo, proced):
     resultado =  proced.buscarInicio(cuadruplo[1])
-    print ("GOSUB", resultado)
+    #print ("GOSUB", resultado)
     return resultado - 1
 
 def ERA(cuadruplo, proced):
     resultado =  proced.buscarFinal(cuadruplo[1])
-    print ("ERA", resultado)
+    #print ("ERA", resultado)
     return resultado
 
 def Param(cuadruplo, monolito, proced, funci, negativo):
@@ -919,21 +879,18 @@ def Param(cuadruplo, monolito, proced, funci, negativo):
 
     #fin de la obtencion de direcciones 
     existe = monolito.buscar(temp)
-    print("operando1:" ,existe)
+    #print("operando1:" ,existe)
     existeres = monolito.buscar(param)
     monolito.insertaActual(param,existe)
-    print("resultado = ", monolito.buscar(param))
+    #print("resultado = ", monolito.buscar(param))
 
 
-    print ("param = ", param)
+    #print ("param = ", param)
 
 def Retorno(cuad, monolito, proc, glob, idFun):
     exists = glob.buscar(idFun)
-    print ("HOLA DOROTI")
     resul = exists['memID']
     temp = cuad[3]
-    print (temp)
-    print (resul)
     checaOperando1 = int(temp)
     checaResultado =  int(resul)
     #validar si es direccion o llave y transformarlo en la llave que es
@@ -944,12 +901,9 @@ def Retorno(cuad, monolito, proc, glob, idFun):
 
     #fin de la obtencion de direcciones 
     existe = monolito.buscar(temp)
-    print("operando1:" ,existe)
     existeres = monolito.buscar(resul)
     monolito.insertaActual(resul,existe)
-    print("resultado = ", monolito.buscar(resul))
 
-    print ("retorno = ", idFun, "resul ", resul)
 
 
 def Ver(cuadruplo,monolito):
@@ -960,7 +914,7 @@ def Ver(cuadruplo,monolito):
     if(checaValorVerificable != valorVerificable):
         valorVerificable = monolito.buscar(checaValorVerificable)
     valor = monolito.buscar(valorVerificable)
-    print("valorVer: ",valor,"menor: ",menor,"mayor: ",mayor)
+    #print("valorVer: ",valor,"menor: ",menor,"mayor: ",mayor)
     if(not ( (valor >= menor) and (valor <= mayor) ) ):
       print("valor fuera del rango de arreglo")
       raise SystemExit
@@ -968,14 +922,13 @@ def Ver(cuadruplo,monolito):
 def DirArreglo(cuadruplo,monolito):
     dirBase = cuadruplo[1]
     desplazamiento =  cuadruplo[2]
-    print("desplazamiento: ",desplazamiento)
     almacenaDezplazamiento = cuadruplo[3]
     checaDesplazamiento = int(desplazamiento)
     if(checaDesplazamiento != desplazamiento):
         desplazamiento = monolito.buscar(checaDesplazamiento)
     suma = monolito.buscar(desplazamiento)
     resultado =  dirBase + suma
-    print("suma: ",suma, " + DirBase: ",dirBase ," = ",resultado)
+    #print("suma: ",suma, " + DirBase: ",dirBase ," = ",resultado)
     monolito.insertaActual(almacenaDezplazamiento,resultado)
 
 

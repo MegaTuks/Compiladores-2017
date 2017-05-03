@@ -2,11 +2,27 @@ principal(){
   entero a;
   entero b[10];
   entero c[2][5];
-  a = 10;
+  caracter d[2];
+  caracter e[3][5];
+  booleano z;
+  entero goku;
+  z = falso;
+
+  d[0] = "jojo";
+  d[1] = "dio";
+  e[2][1] = "PLUS";
+  e[1][2] = "ULTRA";
+  entrada goku;
+  entrada a;
+  si(z){
+    salida "No comi mis cheetos";
+  }
   mientras (a  > 0){
-    b[2] = a - 1;
-    a = a -1;
+    a = a - 1;
     salida a;
   }
-
+  salida goku;
+  salida e[2][1];
+  salida e[1][2];
+  salida e[1-1+1+1][1] + e[1][1+1];
 }
