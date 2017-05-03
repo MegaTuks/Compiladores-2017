@@ -36,6 +36,24 @@ class claseCuboSemantico:
       return IndexOP1
 
 
+    def SemanticaRet(self, operando1):
+        aux = int(operando1 / 10000)
+        VerdaderoValor1 = operando1 - aux * 10000
+        IndexOP1 = 4
+        if(VerdaderoValor1 >= 0 and VerdaderoValor1 <= 2500):
+            IndexOP1 = 0
+        elif(VerdaderoValor1 >= 2501 and VerdaderoValor1 <= 5000):
+            IndexOP1 = 1
+        elif(VerdaderoValor1 >= 5001 and VerdaderoValor1 <= 7500):
+            IndexOP1 = 2
+        elif(VerdaderoValor1 >= 7501 and VerdaderoValor1 <= 10000): 
+            IndexOP1 = 3 
+
+        if IndexOP1 == 4:
+            print ("Valor de retorno erroneo")
+            SystemExit
+        return IndexOP1 
+
 
     def Semantica(self, operador, operando1, operando2):
         aux = int(operando1 / 10000)
@@ -256,8 +274,8 @@ class Procedimientos:
     def buscar(self, id):
         return self.listParam.get(id)
 
-    def buscarParam(self, id):
-        return self.listParam.get(id)[0]['memID']
+    def buscarParam(self, id, param):
+        return self.listParam.get(id)[param]['memID']
 
     def buscarInicio(self, id):
         for proc in self.procedimientos:
@@ -406,7 +424,7 @@ class MaquinaVirtual:
   def __init__(self):
         self.stack = list()
   
-  def Ejecutar(self,cuadruplo,mon, proc):
+  def Ejecutar(self,cuadruplo,mon, proc, glob):
     indiceActual = 0
     stackIndices = []
     stackIndicesFinales = []
@@ -448,20 +466,23 @@ class MaquinaVirtual:
         indiceTemporal = Goto(cuad,mon) 
       elif(operador == "gosub"):
         print("run Gosub")
+        stackParam = 0
         stackIndices.append(indiceActual+1)
+        print ("-----regreso a donde se cargo funcion----. ")
         print (stackIndices)
         indiceTemporal = Gosub(cuad,proc)
 
       elif(operador == "RETU"):
         print("run RETU")
         nuevoIndice = stackIndices.pop()
-        indiceTemporal = nuevoIndice
+        indiceTemporal = nuevoIndice - 1
 
       elif(operador == "ERA"):
         print("run ERA")
         final = ERA(cuad,proc)
         print (final)
         stackIndicesFinales.append(final)
+        print ("-----direcciones de retorno al terminar funcion----. ")
         print (stackIndicesFinales)
         stackERA.append(cuad[1])
         print (stackERA)
@@ -469,9 +490,18 @@ class MaquinaVirtual:
       elif(operador == "param"):
         print("run param")
         stackParam = stackParam + 1
+        nega = stackParam * -1
         func = stackERA[-1]
-        Param(cuad, mon, proc, func, stackParam)
+        print (nega)
+        Param(cuad, mon, proc, func, nega)
         print (func)
+
+      elif(operador == "ret"):
+        print("run retorno")
+        print (stackERA)
+        idFun = stackERA.pop()
+        Retorno(cuad, mon, proc, glob, idFun)
+        indiceTemporal = stackIndicesFinales.pop() - 1
         
       elif(operador == "&&"):
         AndOp(cuad,mon)
@@ -874,11 +904,50 @@ def Gosub(cuadruplo, proced):
 def ERA(cuadruplo, proced):
     resultado =  proced.buscarFinal(cuadruplo[1])
     print ("ERA", resultado)
-    return resultado - 1
+    return resultado
 
-def Param(cuadruplo, monolito, proced, funci):
-    resultado =  proced.buscarParam(funci)
-    print ("param = ", resultado)
+def Param(cuadruplo, monolito, proced, funci, negativo):
+    param =  proced.buscarParam(funci, negativo)
+    temp = cuadruplo[1]
+    checaOperando1 = int(temp)
+    #validar si es direccion o llave y transformarlo en la llave que es
+    if(checaOperando1 != temp):
+      temp = monolito.buscar(checaOperando1)
+
+    #fin de la obtencion de direcciones 
+    existe = monolito.buscar(temp)
+    print("operando1:" ,existe)
+    existeres = monolito.buscar(param)
+    monolito.insertaActual(param,existe)
+    print("resultado = ", monolito.buscar(param))
+
+
+    print ("param = ", param)
+
+def Retorno(cuad, monolito, proc, glob, idFun):
+    exists = glob.buscar(idFun)
+    print ("HOLA DOROTI")
+    resul = exists['memID']
+    temp = cuad[3]
+    print (temp)
+    print (resul)
+    checaOperando1 = int(temp)
+    checaResultado =  int(resul)
+    #validar si es direccion o llave y transformarlo en la llave que es
+    if(checaOperando1 != temp):
+      temp = monolito.buscar(checaOperando1)
+    if(checaResultado != resul):
+      resul = monolito.buscar(checaResultado)
+
+    #fin de la obtencion de direcciones 
+    existe = monolito.buscar(temp)
+    print("operando1:" ,existe)
+    existeres = monolito.buscar(resul)
+    monolito.insertaActual(resul,existe)
+    print("resultado = ", monolito.buscar(resul))
+
+    print ("retorno = ", idFun, "resul ", resul)
+
 
 def Ver(cuadruplo,monolito):
     valorVerificable =  cuadruplo[1]
