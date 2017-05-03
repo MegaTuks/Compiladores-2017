@@ -21,7 +21,7 @@ class claseCuboSemantico:
                      '&&': [[0, 4, 4, 4, 4], [4, 4, 4, 4, 4], [4, 4, 4, 4, 4], [4, 4, 4, 4, 4]],
                      '||': [[0, 4, 4, 4, 4], [4, 4, 4, 4, 4], [4, 4, 4, 4, 4], [4, 4, 4, 4, 4]],
                      'entrada': [[0, 4, 4, 4, 4], [4, 1, 4, 4, 4], [4, 4, 2, 4, 4], [4, 4, 4, 3, 4]],
-                     '~': [[0, 4, 4, 4, 4], [4, 0, 4, 4, 4], [4, 4, 0, 4, 4], [4, 4, 4, 0, 4]],
+                     '~': [[0, 0, 0, 0, 4], [0, 0, 0, 0, 4], [0, 0, 0, 0, 4], [0, 0, 0, 0, 4]]
                      }
     def VerSemantica(self, operando1):
       aux = int(operando1 / 10000)
@@ -502,7 +502,7 @@ class MaquinaVirtual:
         MayorQue(cuad,mon)
       elif(operador == "<"):
         MenorQue(cuad,mon)
-      elif(operador == "?"):
+      elif(operador == "~"):
         print("igual que")
         IgualQue(cuad,mon)
       ##Funciones de arreglos
@@ -705,6 +705,7 @@ def IgualQue(cuadruplo,monolito):
       almacenar = "verdadero"
     else:
       almacenar = "falso"
+    print(existe, " :IGUAL QUE: ",existe2, "Respuesta: ", almacenar)
     monolito.insertaActual(resultado,almacenar)  
 
 def AndOp(cuadruplo,monolito):
@@ -849,7 +850,7 @@ def GotoT(cuadruplo, monolito,indice):
 
 def GotoF(cuadruplo, monolito,indice):
     operando1 = cuadruplo[1]
-    print("operando1", operando1)
+    print("operando1:es", operando1)
     #indicando que esa temporal almacena la direccion de memoria indicada
     checaOperando1 = int(operando1)
     #validar si es direccion o llave y transformarlo en la llave que es
@@ -857,6 +858,7 @@ def GotoF(cuadruplo, monolito,indice):
       operando1 = monolito.buscar(checaOperando1)
     resultado =  cuadruplo[3]
     existe = monolito.buscar(operando1)
+    print("el existe es: ",existe)
     if(existe == "falso"):
       print("es falso, salto a :" ,resultado)
       indice = resultado - 1

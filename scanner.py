@@ -1024,10 +1024,12 @@ def p_ValorBool(t):
     existe = None
     existe = tablaConstantes.buscar(t[1])
     if (existe is None):
+        print("booleano es: ",t[1])
         memID = getMemId("booleano")
         val =  {"memID":memID, 'tipo':"booleano"}
         insertaConstante(t[1],val)
         stackOperando.append(memID)
+        monolito.insertaConstante(memID,t[1])
     else:
         stackOperando.append(existe['memID'])
 
