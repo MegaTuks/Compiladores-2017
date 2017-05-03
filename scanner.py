@@ -243,7 +243,7 @@ def p_error(t):
 #diagrama de sintaxis Inicial del pograma , Funcion principal 
 def p_Programa(t):
     '''
-      Programa : ProgramaInicio ProgramaA FuncionPrincipal
+      Programa : Globales ProgramaInicio ProgramaA FuncionPrincipal
     '''
     global tablaGlobal, tablaSimbolosActual, tablaConstantes,cuadruplo,listaprocedimientos
     cuadruplo.normalCuad('FIN',None,None,None)
@@ -254,7 +254,7 @@ def p_Programa(t):
     monolito.imprimir()
     maquina = MaquinaVirtual()
 
-    maquina.Ejecutar(cuadruplo,monolito)
+    maquina.Ejecutar(cuadruplo,monolito, listaprocedimientos)
 
 #salto inicial del programa. 
 def p_ProgramaInicio(t):
@@ -269,8 +269,14 @@ def p_ProgramaInicio(t):
 #diagrama de sintaxis de como funciona el programa , puedes ahcer declaraciones, Funciones o clases antes de entrar al main
 def p_ProgramaA(t):
     '''
-      ProgramaA : Declaracion ProgramaA
-      | Funcion ProgramaA
+      ProgramaA : Funcion ProgramaA
+      | empty
+    '''
+
+def p_Globales(t):
+    '''
+      Globales : Declaracion Globales
+      | Asignacion Globales
       | empty
     '''
 
@@ -365,8 +371,9 @@ def p_FuncionA(t):
             memID = getMemId(tipo)
             valorDefault = setValor(tipo)
             parametro = {'id':identificador,'tipo':tipo , 'memID':memID}
+            tipoPar = {'tipo':tipo, 'memID':memID}
             listaParametros.append(parametro)
-            tablaSimbolosActual.insertar(identificador, tipo)
+            tablaSimbolosActual.insertar(identificador, tipoPar)
             monolito.insertaActual(memID,valorDefault)
         else:
             print("parametro declarado previamente, o variable global comparte su nombre")
@@ -529,6 +536,9 @@ def p_Asignacion(t):
         print("longitud Local: ",len(existe))
         if(len(existe) == 2):
             op1 = stackOperando.pop()
+            print ("HOLA BUBALUBS")
+            print (op1)
+            print (existe['memID'])
             checkSemantica.Semantica('=',op1,existe['memID'])
             cuadruplo.normalCuad('=',op1,None,existe['memID'])
         elif(len(existe) == 5):
@@ -626,9 +636,15 @@ def p_finLlamada(t):
     '''
     finLlamada : 
     '''
-    global cuadruplo, stackOperando,procedureName
+    global cuadruplo, stackOperando,procedureName, tablaSimbolosActual, tablaGlobal
     iden =  procedureName.pop()
     cuadruplo.normalCuad('gosub', iden, None, None)
+    print ("HOLA RUBY")
+    print (iden)
+    existe = tablaGlobal.buscar(iden)
+    print ("HOLA DUBS")
+    print (existe['memID'])
+    stackOperando.append(existe['memID']) 
 
 
 def p_Ciclo(t):

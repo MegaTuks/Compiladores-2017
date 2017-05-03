@@ -1,0 +1,30 @@
+entero g;
+g = 19;
+
+funcion entero fun1 (entero a, entero b){
+  entero tem;
+  tem = a + b;
+  retorno tem;
+
+}
+
+funcion entero fun2 (entero c){
+  entero n1;
+  n1 = 5;
+  entero n2;
+  n2 = c - n1;
+  n1 = n1 + g;
+  entero n3;
+  n3 = fun1( n1,  n2);
+  retorno n3;
+
+}
+
+principal(){
+  entero start;
+  start = 10;
+  entero resp;
+  resp = fun2( start);
+  salida resp;
+
+}
