@@ -359,6 +359,7 @@ def p_FinFuncion(t):
     '''
     global tablaGlobal, tablaSimbolosActual,nuevaFuncion,listaprocedimientos,listaParametros,cuadruplo,inicioCuad
     cuadruplo.normalCuad('RETU',None,None,None)
+    print("FIN FUNCION")
     destino = cuadruplo.CuadIndex()
     tablaSimbolosActual = tablaGlobal
     listaprocedimientos.meteParametros(nuevaFuncion, listaParametros)
@@ -650,9 +651,11 @@ def p_LlamadaAux(t):
         print("Funcion no declarada")
         raise SystemExit
     else:
-
+        print("iden",identificador)
+        listaprocedimientos.imprimir()
+        print("listaprocedimientos: ", listaprocedimientos.buscar(identificador))
         iden = list(listaprocedimientos.buscar(identificador))
-        print("iden",iden)
+        
         stackParam.append(iden)
         procedureName.append(identificador)
         print("stack de parametros: ",stackParam)
