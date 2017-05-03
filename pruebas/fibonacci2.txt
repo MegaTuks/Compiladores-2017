@@ -1,0 +1,30 @@
+funcion entero fibonacci (entero n){
+	entero ant;
+	ant = -1;
+	entero resul;
+	resul = 1;
+	entero suma;
+	entero i;
+	i = 0;
+
+	mientras (i < n){
+	   suma = resul + ant;
+	   ant = resul;
+	   resul = suma;
+
+	   i = i + 1;
+	   
+	}
+
+	retorno resul;
+}
+
+principal()
+{
+	entero a;
+	a = 10;
+	entero fibo;
+	fibo = fibonacci(a);
+	salida fibo;
+
+}

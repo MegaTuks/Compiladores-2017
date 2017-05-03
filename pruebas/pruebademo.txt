@@ -1,0 +1,18 @@
+entero variable;
+variable = 6;
+
+funcion entero nomFuncion (entero n){
+  entero a2;
+  a2 = variable + n;
+  retorno a2;
+
+}
+
+principal(){
+  entero a;
+  a = 5;
+  entero b;
+  b = nomFuncion( a);
+  salida b;
+
+}
