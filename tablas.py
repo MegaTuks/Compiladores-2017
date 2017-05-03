@@ -256,6 +256,25 @@ class Procedimientos:
     def buscar(self, id):
         return self.listParam.get(id)
 
+    def buscarParam(self, id):
+        return self.listParam.get(id)[0]['memID']
+
+    def buscarInicio(self, id):
+        for proc in self.procedimientos:
+            if proc[0] == id:
+                return proc[2]
+        print ("Se llamo una funcion no existente.")
+        raise SystemExit
+                
+
+    def buscarFinal(self, id):
+        for proc in self.procedimientos:
+            if proc[0] == id:
+                return proc[3]
+        print ("Se llamo una funcion no existente.")
+        raise SystemExit
+                
+
     def ListaSize(self):
         return len(self.procedimientos)
 
@@ -387,8 +406,12 @@ class MaquinaVirtual:
   def __init__(self):
         self.stack = list()
   
-  def Ejecutar(self,cuadruplo,mon):
+  def Ejecutar(self,cuadruplo,mon, proc):
     indiceActual = 0
+    stackIndices = []
+    stackIndicesFinales = []
+    stackERA = []
+    stackParam = 0
     print(cuadruplo.cuadruplos[0][0])
     while(True):
       indiceTemporal = 0
@@ -423,6 +446,33 @@ class MaquinaVirtual:
       elif(operador == "GOTO"):
         print("run GOTO")
         indiceTemporal = Goto(cuad,mon) 
+      elif(operador == "gosub"):
+        print("run Gosub")
+        stackIndices.append(indiceActual+1)
+        print (stackIndices)
+        indiceTemporal = Gosub(cuad,proc)
+
+      elif(operador == "RETU"):
+        print("run RETU")
+        nuevoIndice = stackIndices.pop()
+        indiceTemporal = nuevoIndice
+
+      elif(operador == "ERA"):
+        print("run ERA")
+        final = ERA(cuad,proc)
+        print (final)
+        stackIndicesFinales.append(final)
+        print (stackIndicesFinales)
+        stackERA.append(cuad[1])
+        print (stackERA)
+
+      elif(operador == "param"):
+        print("run param")
+        stackParam = stackParam + 1
+        func = stackERA[-1]
+        Param(cuad, mon, proc, func, stackParam)
+        print (func)
+        
       elif(operador == "&&"):
         AndOp(cuad,mon)
       elif(operador == "||"):
@@ -792,6 +842,20 @@ def Goto(cuadruplo, monolito):
     print("GOTO", resultado)
     return resultado - 1
     #monolito.insertaActual(resultado,existe)
+
+def Gosub(cuadruplo, proced):
+    resultado =  proced.buscarInicio(cuadruplo[1])
+    print ("GOSUB", resultado)
+    return resultado - 1
+
+def ERA(cuadruplo, proced):
+    resultado =  proced.buscarFinal(cuadruplo[1])
+    print ("ERA", resultado)
+    return resultado - 1
+
+def Param(cuadruplo, monolito, proced, funci):
+    resultado =  proced.buscarParam(funci)
+    print ("param = ", resultado)
 
 def Ver(cuadruplo,monolito):
     valorVerificable =  cuadruplo[1]
