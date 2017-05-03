@@ -115,6 +115,7 @@ t_CONST_CARACTERES = r'\"[A-Za-z0-9_\(\)\{\}\[\]\<\>\!\ ]*\"'
 #funcion para imprimir errores lexicos
 def t_error(t):
     print("Caracter  Ilegal>>> '%s'  <<<<" % t.value[0])
+    raise SystemExit
     t.lexer.skip(1)
 
 def insertaConstante(iden,tipo):
@@ -227,7 +228,7 @@ def setValorDim(tipo,inicio,fin):
         valor = "n/a"
     elif (tipo == "entero"):
         valor = 0
-    while (inicio < fin):
+    while (inicio <= fin):
         print("incio:", inicio)
         monolito.insertaActual(inicio,valor)
         inicio = inicio + 1
@@ -567,7 +568,7 @@ def p_Asignacion(t):
     identificador = t[1]
     existe = tablaSimbolosActual.buscar(identificador)
     existeGlobal = tablaGlobal.buscar(identificador)
-
+    print("ASIGNACION")
     if(existe is  None):
         if(existeGlobal is  None):
             print("VARIABLE no declarada previamente") 
@@ -1016,7 +1017,8 @@ def p_ValorCar(t):
 
 def p_ValorBool(t):
     '''
-    ValorBool : CONST_BOOLEANO
+    ValorBool : KEYWORD_FALSO
+    | KEYWORD_VERDADERO
     '''
     global tablaConstantes,stackOperando
     existe = None
