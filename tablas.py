@@ -502,6 +502,9 @@ class MaquinaVirtual:
         MayorQue(cuad,mon)
       elif(operador == "<"):
         MenorQue(cuad,mon)
+      elif(operador == "?"):
+        print("igual que")
+        IgualQue(cuad,mon)
       ##Funciones de arreglos
       elif(operador == "ver"):
         Ver(cuad,mon)
@@ -670,6 +673,38 @@ def MenorQue(cuadruplo,monolito):
     else:
       almacenar = "falso"
     print(existe, " :MENOR QUE: ",existe2)
+    monolito.insertaActual(resultado,almacenar)  
+
+def IgualQue(cuadruplo,monolito):
+    operando1 = cuadruplo[1]
+    print("operando1", operando1)
+    operando2 =  cuadruplo[2]
+    print("operando2", operando2)
+    resultado =  cuadruplo[3]
+    print("res", resultado)
+    #validar que sean direcciones de tener algun valor real saldran diferentes en la comparacion
+    #indicando que esa temporal almacena la direccion de memoria indicada
+    checaOperando1 = int(operando1)
+    checaOperando2 = int(operando2)
+    checaResultado = int(resultado)
+    #validar si es direccion o llave y transformarlo en la llave que es
+    if(checaOperando1 != operando1):
+      operando1 = monolito.buscar(checaOperando1)
+    if(checaOperando2 != operando2):
+      operando2 =  monolito.buscar(checaOperando2)
+    if(checaResultado != resultado):
+      resultado = monolito.buscar(checaResultado)
+    #fin de la obtencion de direcciones 
+    existe = monolito.buscar(operando1)
+    print("operando1:" ,existe)
+    existe2 = monolito.buscar(operando2)
+    print("opearndo2:" ,existe2)
+    existeres = monolito.buscar(resultado)
+    print("resultado", existeres)
+    if(existe == existe2):
+      almacenar = "verdadero"
+    else:
+      almacenar = "falso"
     monolito.insertaActual(resultado,almacenar)  
 
 def AndOp(cuadruplo,monolito):
