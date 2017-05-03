@@ -128,6 +128,8 @@ def insertaConstante(iden,tipo):
     else:
         x = "la magia de disney"
 
+#recibe un string de caracteres, del cual determina su tipo de variable
+#genera una direccion de memoria y la devuelve al que haya llamadao la funcion
 def getMemId(tipo):
     global memoriaGlobal
     memID = 0
@@ -141,6 +143,8 @@ def getMemId(tipo):
         memID = memoriaGlobal.insertaEntero()
     return memID
 
+#calcularMatriz id recibe de parametros las casillas de entrada de la izquierda de la derecha
+# y genera un diccionario que recibe {'inicio':primeracasilla, 'fin':ultimacasilla}
 def calcularMatrizId(tipo,izquierda, derecha):
     global memoriaGlobal
     total = izquierda * derecha
@@ -154,7 +158,11 @@ def calcularMatrizId(tipo,izquierda, derecha):
         memID = memoriaGlobal.insertaDimEntero(total)
     return memID
 
-
+#Genera los cuadruplos para verificar que las expresiones del arreglo o matriz no se excedan
+# si el dicionario tiene 5 elementos es arreglo
+# de tener 6 es matriz
+# el .5 se usa para definir una variable que almacena una direccion de memoria
+#cuadruplo interpreta la funcion
 def VerificadorCuad(diccionario, opExpresionArr,opExpArr2 = None):
     global checkSemantica,monolito,cuadruplo, stackOperando,tablaConstantes
     val = checkSemantica.VerSemantica(opExpresionArr)
@@ -183,7 +191,9 @@ def VerificadorCuad(diccionario, opExpresionArr,opExpArr2 = None):
         temp = temp + 0.5
         stackOperando.append(temp)
 
-
+#genera una variable temporal
+#dependiendo de tipo num es el tipo de temporal que genera
+#la almacena en una tabla ademas de insertarla en el monolito
 def setTemporal(tipoNum):
     global memoriaGlobal,monolito,tablaTemporales,indicetemporales
     result = 't' + str(indicetemporales)
@@ -208,7 +218,8 @@ def setTemporal(tipoNum):
     monolito.insertaActual(memID,valor)
     return memID
 
-
+#Genera un valor default para un arreglo o matriz de direcciones
+#tipo es el tipo, inicio la direccion de inicio y fin la direccion final.
 def setValorDim(tipo,inicio,fin):
     global monolito
     if (tipo == "real"):
@@ -223,6 +234,7 @@ def setValorDim(tipo,inicio,fin):
         monolito.insertaActual(inicio,valor)
         inicio = inicio + 1
 
+#genera un valor default para una variable , temporal o constante.
 def setValor(tipo):
     if (tipo == "real"):
         return 0.0
@@ -232,7 +244,7 @@ def setValor(tipo):
         return "n/a"
     elif (tipo == "entero"):
         return 0
-
+#al definir funciones make param inserta sus parametros en la lista de procedimientos.
 def makeParam(paramID, stackActual):
     global listaprocedimientos,cuadruplo
     lista = listaprocedimientos.buscar(paramID)
@@ -248,9 +260,6 @@ def makeParam(paramID, stackActual):
             paramActual = longitudTotal - longitudActual 
         return paramActual
 
-
-
-
 import ply.lex as lex
 
 lexer = lex.lex()
@@ -259,11 +268,11 @@ lexer = lex.lex()
 def p_empty(p):
     'empty :'
     pass
-
+#funcion que maneja errores de tener errores lo marca y deja de correr.
 def p_error(t):
     print("Error de sintaxis en '%s'" % t.value)
 
-#diagrama de sintaxis Inicial del pograma , Funcion principal 
+#diagrama de sintaxis Inicial del pograma , Funcion principal Se declaran PRIMERO las variables globales, luego lsa funciones
 def p_Programa(t):
     '''
       Programa : Globales ProgramaInicio ProgramaA FuncionPrincipal
@@ -276,8 +285,8 @@ def p_Programa(t):
     listaprocedimientos.imprimir()
     monolito.imprimir()
     maquina = MaquinaVirtual()
-
     maquina.Ejecutar(cuadruplo,monolito, listaprocedimientos, tablaGlobal)
+
 
 #salto inicial del programa. 
 def p_ProgramaInicio(t):
@@ -295,7 +304,7 @@ def p_ProgramaA(t):
       ProgramaA : Funcion ProgramaA
       | empty
     '''
-
+#diagrama de sintaxis para la definicion de variables globales
 def p_Globales(t):
     '''
       Globales : Declaracion Globales
@@ -315,6 +324,8 @@ def p_FinPrincipal(t):
     global tablaSimbolosActual, tablaGlobal
     tablaSimbolosActual =  tablaGlobal
 
+#auxiliar de principal par aal momento de encontrar la keyword principal generar los saltos de cuadruplo y 
+#acciones de resolucion de memoria necesarios.
 def p_PrincipalAux(t):
     '''
     PrincipalAux : KEYWORD_PRINCIPAL
@@ -331,13 +342,14 @@ def p_PrincipalAux(t):
     salto =  cuadruplo.CuadIndex() + 1
     cuadruplo.InsertarSalto(indice, salto)
 
-
+#diagrama de sintaxis de funcion , codigo se ejecuta en sus auxiliares
 def p_Funcion(t):
     '''
     Funcion : FuncionAux PARENTESIS_IZQ FuncionA PARENTESIS_DER Bloque FinFuncion
     '''
 
-
+#auxiliar qeu denomina el final de una funcion, inserta el cuadruplo de RETU
+#ademas de liberar la memoria necesaria de liberar.
 def p_FinFuncion(t):
     '''
     FinFuncion : 
@@ -352,6 +364,8 @@ def p_FinFuncion(t):
     inicioCuad = 0
     listaParametros = []
 
+#almacena los valores necesarios en tablasimbolos actual, tabla global , almacena el nombre
+# e inserta la direccion de memoria en el monolito.
 def p_FuncionAux(t):
     '''
     FuncionAux : KEYWORD_FUNCION Tipo IDENTIFICADOR
@@ -379,7 +393,7 @@ def p_FuncionAux(t):
         raise SystemExit
 
 
-
+#funcion para meter los valores de los parametros dentro de funcion y a lista parametros que maneja los parametros necesarios.
 def p_FuncionA(t):
     '''
     FuncionA : Tipo IDENTIFICADOR FuncionB
@@ -402,18 +416,19 @@ def p_FuncionA(t):
             print("parametro declarado previamente, o variable global comparte su nombre")
             raise SystemExit
 
-
+#recursisvidad en caso de tener mas de 1 parametro.
 def p_FuncionB(t):
     '''
     FuncionB : COMA FuncionA
     | empty
     '''
-
+#diagrama principal donde declara las posible sacciones de un bloque
 def p_Bloque(t):
     '''
     Bloque : BRACKET_IZQ BloqueA BRACKET_DER
     '''
-
+#diagrama de las acciones de bloque es recursiva
+#para que el bloque no tenga un tamano finito.
 def p_BloqueA(t):
     '''
     BloqueA : Declaracion BloqueA
@@ -427,7 +442,7 @@ def p_BloqueA(t):
     | RetornoAux
     | empty
     '''
-
+#genera cuadruplos de re y las operaciones necesarias apra correr en cuadruplo.
 def p_RetornoAux(t):
     '''
     RetornoAux : KEYWORD_RETORNO Expresion SEMICOLON
@@ -451,8 +466,10 @@ def p_RetornoAux(t):
         raise SystemExit
     cuadruplo.normalCuad('ret', None, None, op)
 
-
-
+#maneja la funcionalidad de declaracion
+#genera valores de monolito
+#almacena la variable en la tabla de simbolos (previamente checa que no exista)
+#ALmacena valores en el monolito.
 def p_Declaracion(t):
     '''
     Declaracion : Tipo IDENTIFICADOR DeclaracionA SEMICOLON
@@ -495,7 +512,7 @@ def p_Declaracion(t):
         print("Variable declarada previamente, o variable global comparte su nombre")
         raise SystemExit
     
-
+#devuelve a declaracion diccionario si tiene casillas(osease si es matriz o arreglo)
 def p_DeclaracionA(t):
     '''
     DeclaracionA : ArregloAux DeclaracionB
@@ -512,7 +529,7 @@ def p_DeclaracionA(t):
 
 
         #t[0] = {'arreglo':t[1],'matriz':t[2] }
-
+# dicionario recibido por declaracion a , interpretado para definir si es vector o arreglo.
 def p_ArregloAux(t):
     '''
     ArregloAux : CORCHETE_IZQ CONST_NUMERO_ENT CORCHETE_DER
@@ -535,7 +552,9 @@ def p_DeclaracionB(t):
     '''
     t[0] = t[1]
 
-
+#genera cuadruplo de asignacion
+#recibe exp
+#maneja funcionalidad con Arreglos y MAtrices
 def p_Asignacion(t):
     '''
     Asignacion : IDENTIFICADOR AsignacionA OPERADOR_IGUAL Expresion SEMICOLON
@@ -597,24 +616,24 @@ def p_Asignacion(t):
             cuadruplo.normalCuad('=',opExpresion,None,aAlmacenar)
 
 
-
+#asignacion de valores dimensionados
 def p_AsignacionA(t):
     '''
     AsignacionA : CORCHETE_IZQ Expresion CORCHETE_DER AsignacionB
     | empty
     '''
-
+#asignacion de valores bi dimensionados.
 def p_AsignacionB(t):
     '''
     AsignacionB : CORCHETE_IZQ Expresion CORCHETE_DER
     | empty
     '''
-
+#diagrama de llamada funcion
 def p_LlamadaFuncion(t):
     '''
     LlamadaFuncion : LlamadaAux PARENTESIS_IZQ LlamadaFuncionA PARENTESIS_DER finLlamada
     '''
-
+#auxiliar de llamada funcion quealmacena el nombre de la funcion y sus respectivos valores. 
 def p_LlamadaAux(t):
     '''
     LlamadaAux : IDENTIFICADOR
@@ -640,7 +659,7 @@ def p_LlamadaFuncionA(t):
     LlamadaFuncionA :  ParamAux  LlamadaFuncionB
     | empty
     '''   
-
+#maneja los parametros que se fueran a usar
 def p_ParamAux(t):
     '''
     ParamAux : Expresion
@@ -665,7 +684,7 @@ def p_LlamadaFuncionB(t):
     LlamadaFuncionB : COMA LlamadaFuncionA
     | empty
     '''
-
+#funcion que finaliza el fin de la llamada
 def p_finLlamada(t):
     '''
     finLlamada : 
@@ -721,7 +740,8 @@ def p_LlamadaId(t):
     | Terminal
     '''
     #funcion a checar
-
+#funcion para manejar terminales y meterlos al stackde operandos
+# sean variables, vectores o matrices.
 def p_Terminal(t):
     '''
     Terminal : IDENTIFICADOR TerminalA
@@ -744,7 +764,6 @@ def p_Terminal(t):
                 expArr =  stackOperando.pop()
                 expArrDer = stackOperando.pop()
                 VerificadorCuad(existeGlobal, expArr,expArrDer)
-
     else:
         if(len(existe) == 2):
             stackOperando.append(existe['memID'])
@@ -769,7 +788,7 @@ def p_TerminalB(t):
     TerminalB : CORCHETE_IZQ Expresion CORCHETE_DER TerminalB
     | empty
     '''
-
+#devuelve el keyword del tipo a los diagramas que utilicen Tipo
 def p_Tipo(t):
     '''
     Tipo : KEYWORD_TYPE_BOOLEANO
@@ -779,12 +798,14 @@ def p_Tipo(t):
     '''
     t[0] = t[1]
 
-
+#diagrama de sintaxis de condicion
 def p_Condicion(t):
     '''
     Condicion : CondicionSi CondicionA
     '''
-
+#diagrama de sintaxis de condicionSi Genera cuadruplo goto
+#almacena direccion del gotof
+#la devuelve en sino o cuando se cierra
 def p_CondicionSi(t):
     '''
     CondicionSi : KEYWORD_SI PARENTESIS_IZQ Expresion PARENTESIS_DER
@@ -822,7 +843,7 @@ def p_SinoAux(t):
     salto = cuadruplo.CuadIndex()
     stackSaltos.append(salto)
 
-
+#ACTUALIZA SALTO de goto, diagrama auxiliar
 def p_FinSino(t):
     '''
     FinSino :
@@ -832,7 +853,7 @@ def p_FinSino(t):
     salto = cuadruplo.CuadIndex() + 1
     cuadruplo.InsertarSalto(indice,salto)
 
-
+#diagrama de sintaxis para entrada
 def p_Entrada(t):
     '''
     Entrada : KEYWORD_ENTRADA IDENTIFICADOR EntradaA SEMICOLON
@@ -846,7 +867,7 @@ def p_Entrada(t):
         print("no se permite entrada con variables dimensionadas")
         raise SystemExit
 
-
+#diagramaauxiliar para entrada de enteros.
 def p_EntradaA(t):
     '''
     EntradaA : CORCHETE_IZQ Expresion CORCHETE_DER EntradaB
@@ -858,7 +879,7 @@ def p_EntradaB(t):
     EntradaB : CORCHETE_IZQ Expresion CORCHETE_DER
     | empty
     '''
-
+#diagrama para valores de salida
 def p_Salida(t):
     '''
     Salida : KEYWORD_SALIDA Expresion SEMICOLON
@@ -866,19 +887,19 @@ def p_Salida(t):
     global cuadruplo,stackOperando
     identificador = stackOperando.pop()
     cuadruplo.normalCuad("output",identificador,None,None)
-
+#funcion de cambio para simular switch case
 def p_Cambio(t):
     '''
     Cambio : KEYWORD_CAMBIO PARENTESIS_IZQ Expresion PARENTESIS_DER BRACKET_IZQ CambioA BRACKET_DER
     '''
-
+#funcion auxiliar para switch case.
 def p_CambioA(t):
     '''
     CambioA : CambioCasoAux Bloque FinCambioCaso CambioA
     | empty
     '''
 
-    
+#funcionalidad para caso cambio .    
 def p_CambioCasoAux(t):
     '''
     CambioCasoAux : KEYWORD_CASO ValorSalida COLON
@@ -896,7 +917,7 @@ def p_CambioCasoAux(t):
     stackOperando.append(op)
     stackSaltos.append(asaltar)
     stackCambio.append(asaltar)
-
+#auxiliar para definri fin de caso de uso.
 def p_FinCambioCaso(t):
     '''
     FinCambioCaso : 
