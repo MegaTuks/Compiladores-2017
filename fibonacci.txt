@@ -9,7 +9,6 @@ funcion entero fibonacci (entero n){
     b = fibonacci(n - 2);
     retorno a + b;
     }
-
 }
 
 principal(){
@@ -18,7 +17,6 @@ principal(){
   n = 1;
   mientras (n < 10){
     fibo = fibonacci(n);
-    salida "Respuesta: ";
     salida fibo;
     n = n + 1;
   }

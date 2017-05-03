@@ -10,7 +10,7 @@ principal(){
   busca = falso;
   entero i;
   i = 0;
-  salida "Teclea un numero del 1 al 10 que deseas encontrar.";
+  salida "Teclea un numero del 1 al 10 que deseas encontrar";
   entrada num;
   mientras (i < 5){
     si (lista [i] ~ num) {
@@ -21,11 +21,11 @@ principal(){
     i = i + 1;
   }
   si (busca ~ verdadero) {
-    salida "Si se encontro el numero!";
+    salida "Si se encontro el numero";
 
   }
    sino {
-    salida "No se encontro el numero.";
+    salida "No se encontro el numero";
 
   }
 

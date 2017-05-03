@@ -1,12 +1,19 @@
+entero pepe;
+pepe = 9;
 funcion entero pruebaFuncion (entero a){
   entero b;
+  b = 2;
   b = a + b;
+  salida b;
   retorno b;
 
 }
 principal(){
   entero first;
+  entero second;
   first = 5;
-  pruebaFuncion( first);
+  second = pruebaFuncion( first + 2) + 5;
+  salida second;
+  salida pepe;
 
 }

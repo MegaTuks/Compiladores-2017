@@ -20,17 +20,16 @@ principal(){
   }
   a = 0;
   b = 0;
-  salida "Matriz 1:";
   mientras (a < 2){
     mientras (b < 2){
       salida mat1 [a][b];
       b = b + 1;
     }
+    b = 0;
     a = a + 1;
   }
   a = 0;
   b = 0;
-  salida "Matriz 2:";
   mientras (a < 2){
     mientras (b < 2){
       salida mat2 [a][b];
@@ -43,19 +42,9 @@ principal(){
   mientras (a < 2){
     mientras (b < 2){
       mat3 [a][b] = mat1 [a][b] * mat2 [a][b];
-      b = b + 1;
-    }
-    a = a + 1;
-  }
-  a = 0;
-  b = 0;
-  salida "Multiplicacion de Matrices:";
-  mientras (a < 2){
-    mientras (b < 2){
       salida mat3 [a][b];
       b = b + 1;
     }
     a = a + 1;
   }
-
 }

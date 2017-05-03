@@ -8,6 +8,15 @@ funcion entero fun1 (entero a, entero b){
 
 }
 
+funcion entero pruebaFuncion (entero a){
+  entero b;
+  b = 2;
+  b = a + b;
+  salida b;
+  retorno b;
+
+}
+
 funcion entero fun2 (entero c){
   entero n1;
   n1 = 5;
@@ -15,7 +24,8 @@ funcion entero fun2 (entero c){
   n2 = c - n1;
   n1 = n1 + g;
   entero n3;
-  n3 = fun1( n1,  n2);
+  salida c;
+  n3 = fun1( n1+3+3,  n2);
   retorno n3;
 
 }
@@ -24,7 +34,10 @@ principal(){
   entero start;
   start = 10;
   entero resp;
+  entero second;
   resp = fun2( start);
+   second = pruebaFuncion( start+2) + 5;
+  salida second;
   salida resp;
 
 }

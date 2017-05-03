@@ -3,7 +3,7 @@ principal(){
   entero menor;
   mayor = 1;
   menor = 0;
-  si (mayor > menor) {
+  si (mayor < menor) {
     salida "Si es mayor!";
   } sino {
     salida "No";
