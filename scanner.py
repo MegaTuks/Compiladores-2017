@@ -292,7 +292,7 @@ def p_Programa(t):
     monolito.imprimir()
     maquina = MaquinaVirtual()
 
-    maquina.Ejecutar(cuadruplo,monolito, listaprocedimientos)
+    maquina.Ejecutar(cuadruplo,monolito, listaprocedimientos, tablaGlobal)
 
 #salto inicial del programa. 
 def p_ProgramaInicio(t):
@@ -448,10 +448,26 @@ def p_RetornoAux(t):
     '''
     RetornoAux : KEYWORD_RETORNO Expresion SEMICOLON
     '''
-    global cuadruplo, stackOperando
+    global cuadruplo, stackOperando, nuevaFuncion, checkSemantica
     op = stackOperando.pop()
     retorno =  t[1]
+    existe = tablaGlobal.buscar(nuevaFuncion)
+    tipoRet = existe['tipo']
+    sem = checkSemantica.SemanticaRet(op)
+    if tipoRet == "entero" and sem == 1:
+        var1 = 0
+    elif tipoRet == "booleano" and sem == 0:
+        var1 = 0
+    elif tipoRet == "real" and sem == 2:
+        var1 = 0
+    elif tipoRet == "caracter" and sem == 3:
+        var1 = 0
+    else:
+        print ("Tipo de retorno incopatible")
+        raise SystemExit
     cuadruplo.normalCuad('ret', None, None, op)
+
+
 
 def p_Declaracion(t):
     '''
