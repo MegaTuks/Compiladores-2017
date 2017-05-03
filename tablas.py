@@ -781,20 +781,45 @@ def OrOp(cuadruplo,monolito):
 def Entrada(cuadruplo,monolito):
   ## ver como funciona luego
     operando1 = cuadruplo[1]
+    print(operando1)
+    aux = int(operando1 / 10000)
+    VerdaderoValor1 = operando1 - aux * 10000
+    IndexOP1 = 4
+    if (VerdaderoValor1 >= 0 and VerdaderoValor1 <= 2500):
+        IndexOP1 = 0  
+    elif (VerdaderoValor1 >= 2501 and VerdaderoValor1 <= 5000):
+        IndexOP1 = 1
+    elif (VerdaderoValor1 >= 5001 and VerdaderoValor1 <= 7500):
+        IndexOP1 = 2
+    elif (VerdaderoValor1 >= 7501 and VerdaderoValor1 <= 10000):
+        IndexOP1 = 3
+    valor = input()
+    isValid = False
+    if((type(valor) is str ) and IndexOP1 == 3):
+      isValid = True
+    elif((type(valor) is int ) and IndexOP1 == 1):
+      isValid = True
+    elif((type(valor) is float)and IndexOP1 == 2):
+      isValid = True
+    
+
     #validar que sean direcciones de tener algun valor real saldran diferentes en la comparacion
     #indicando que esa temporal almacena la direccion de memoria indicada
     checaOperando1 = int(operando1)
     #validar si es direccion o llave y transformarlo en la llave que es
     if(checaOperando1 != operando1):
       operando1 = monolito.buscar(checaOperando1)
+
+    if(isValid == False):
+      print("entrada no valida tipos incompatibles")
     #fin de la obtencion de direcciones 
     print("operando1", operando1)
     existe = monolito.buscar(operando1)
     print("operando1:" ,existe)
-    monolito.insertaActual(operando1,existe)
+    monolito.insertaActual(operando1,valor)
     print("resultado = ", monolito.buscar(operando1))
 
-def Salida(cuadruplo,monolito):
+def Salida(cuadruplo, monolito):
     ## ver como funciona luego
     operando1 = cuadruplo[1]
     #validar que sean direcciones de tener algun valor real saldran diferentes en la comparacion

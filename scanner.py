@@ -190,9 +190,6 @@ def VerificadorCuad(diccionario, opExpresionArr,opExpArr2 = None):
         stackOperando.append(temp)
 
 
-
-
-
 def setTemporal(tipoNum):
     global memoriaGlobal,monolito,tablaTemporales,indicetemporales
     result = 't' + str(indicetemporales)
@@ -891,9 +888,14 @@ def p_Entrada(t):
     '''
     Entrada : KEYWORD_ENTRADA IDENTIFICADOR EntradaA SEMICOLON
     '''
-    global cuadruplo,stackOperando
+    global cuadruplo,stackOperando,tablaSimbolosActual,tablaGlobal
     identificador = t[2]
-    cuadruplo.normalCuad("input",identificador,None,None)
+    existe = tablaSimbolosActual.buscar(identificador)
+    if(len(existe) == 2):
+        cuadruplo.normalCuad("input",existe['memID'],None,None)
+    else:
+        print("no se permite entrada con variables dimensionadas")
+        raise SystemExit
 
 
 def p_EntradaA(t):
