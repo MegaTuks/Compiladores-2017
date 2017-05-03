@@ -927,7 +927,8 @@ def p_FinCambioCaso(t):
     salto = cuadruplo.CuadIndex() + 1
     cuadruplo.InsertarSalto(indice,salto)
 
-
+#valor a devolver en Expresion su valor mas granular
+# se maneja en auxiliares para identificar tu tipo y las funciones apropiadas.
 def p_ValorSalida(t):
     '''
     ValorSalida : ValorEnt
@@ -937,7 +938,7 @@ def p_ValorSalida(t):
     | KEYWORD_NULO
     | LlamadaId
     '''
-    #funcion a checar
+    #funcion a checar enteros
 def p_ValorEnt(t):
     '''
     ValorEnt : CONST_NUMERO_ENT
@@ -954,7 +955,7 @@ def p_ValorEnt(t):
     else:
         stackOperando.append(existe['memID'])
         
-
+#funcion a checar reales
 def p_ValorReal(t):
     '''
     ValorReal : CONST_NUMERO_REAL
@@ -971,6 +972,7 @@ def p_ValorReal(t):
     else:
         stackOperando.append(existe['memID'])
 
+#funcion a checar caracteres.
 def p_ValorCar(t):
     '''
     ValorCar : CONST_CARACTERES
@@ -987,6 +989,7 @@ def p_ValorCar(t):
     else:
         stackOperando.append(existe['memID'])
 
+#almacena tipo booleano
 def p_ValorBool(t):
     '''
     ValorBool : KEYWORD_FALSO
