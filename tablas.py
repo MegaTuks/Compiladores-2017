@@ -23,9 +23,10 @@ class claseCuboSemantico:
                      'entrada': [[0, 4, 4, 4, 4], [4, 1, 4, 4, 4], [4, 4, 2, 4, 4], [4, 4, 4, 3, 4]]
                      }
     def VerSemantica(self, operando1):
-      aux = int(operando1/10000)
-      VerdaderoValor1 = operando1 - aux*10000
+      aux = int(operando1 / 10000)
+      VerdaderoValor1 = operando1 - aux * 10000
       IndexOP1 = 4
+      print("VerdaderoValor1: ", VerdaderoValor1)
       if(VerdaderoValor1 >= 2501 and VerdaderoValor1 <= 5000):
           print("entero1")
           IndexOP1 = 1
@@ -37,10 +38,10 @@ class claseCuboSemantico:
 
 
     def Semantica(self, operador, operando1, operando2):
-        aux = int(operando1/10000)
-        aux2 = int(operando2/10000)
-        VerdaderoValor1 = operando1 - aux*10000
-        VerdaderoValor2 = operando2 - aux2*10000
+        aux = int(operando1 / 10000)
+        aux2 = int(operando2 / 10000)
+        VerdaderoValor1 = operando1 - aux * 10000
+        VerdaderoValor2 = operando2 - aux2 * 10000
         IndexOP1 = 4
         IndexOP2 = 4
         if(VerdaderoValor1 >= 0 and VerdaderoValor1 <= 2500):
@@ -432,7 +433,12 @@ class MaquinaVirtual:
       elif(operador == "<"):
         print("menor que")
         MenorQue(cuad,mon)
-
+      ##Funciones de arreglos
+      elif(operador == "ver"):
+        Ver(cuad,mon)
+      elif(operador == "+v"):
+        DirArreglo(cuad,mon)
+      ##FIN DE FUNCIONES DE ARREGLO
       elif(operador == "FIN"):
         break;
       if(indiceTemporal == 0):
@@ -449,6 +455,19 @@ def Suma(cuadruplo,monolito):
     print("operando2", operando2)
     resultado =  cuadruplo[3]
     print("res", resultado)
+    #validar que sean direcciones de tener algun valor real saldran diferentes en la comparacion
+    #indicando que esa temporal almacena la direccion de memoria indicada
+    checaOperando1 = int(operando1)
+    checaOperando2 = int(operando2)
+    checaResultado = int(resultado)
+    #validar si es direccion o llave y transformarlo en la llave que es
+    if(checaOperando1 != operando1):
+      operando1 = monolito.buscar(checaOperando1)
+    if(checaOperando2 != operando2):
+      operando2 =  monolito.buscar(checaOperando2)
+    if(checaResultado != resultado):
+      resultado = monolito.buscar(checaResultado)
+    #fin de la obtencion de direcciones 
     existe = monolito.buscar(operando1)
     print("operando1:" ,existe)
     existe2 = monolito.buscar(operando2)
@@ -466,6 +485,19 @@ def Resta(cuadruplo,monolito):
     print("operando2", operando2)
     resultado =  cuadruplo[3]
     print("res", resultado)
+    #validar que sean direcciones de tener algun valor real saldran diferentes en la comparacion
+    #indicando que esa temporal almacena la direccion de memoria indicada
+    checaOperando1 = int(operando1)
+    checaOperando2 = int(operando2)
+    checaResultado = int(resultado)
+    #validar si es direccion o llave y transformarlo en la llave que es
+    if(checaOperando1 != operando1):
+      operando1 = monolito.buscar(checaOperando1)
+    if(checaOperando2 != operando2):
+      operando2 =  monolito.buscar(checaOperando2)
+    if(checaResultado != resultado):
+      resultado = monolito.buscar(checaResultado)
+    #fin de la obtencion de direcciones 
     existe = monolito.buscar(operando1)
     print("operando1:" ,existe)
     existe2 = monolito.buscar(operando2)
@@ -482,6 +514,19 @@ def Multiplicacion(cuadruplo,monolito):
     print("operando2", operando2)
     resultado =  cuadruplo[3]
     print("res", resultado)
+    #validar que sean direcciones de tener algun valor real saldran diferentes en la comparacion
+    #indicando que esa temporal almacena la direccion de memoria indicada
+    checaOperando1 = int(operando1)
+    checaOperando2 = int(operando2)
+    checaResultado = int(resultado)
+    #validar si es direccion o llave y transformarlo en la llave que es
+    if(checaOperando1 != operando1):
+      operando1 = monolito.buscar(checaOperando1)
+    if(checaOperando2 != operando2):
+      operando2 =  monolito.buscar(checaOperando2)
+    if(checaResultado != resultado):
+      resultado = monolito.buscar(checaResultado)
+    #fin de la obtencion de direcciones 
     existe = monolito.buscar(operando1)
     print("operando1:" ,existe)
     existe2 = monolito.buscar(operando2)
@@ -498,6 +543,19 @@ def Division(cuadruplo,monolito):
     print("operando2", operando2)
     resultado =  cuadruplo[3]
     print("res", resultado)
+    #validar que sean direcciones de tener algun valor real saldran diferentes en la comparacion
+    #indicando que esa temporal almacena la direccion de memoria indicada
+    checaOperando1 = int(operando1)
+    checaOperando2 = int(operando2)
+    checaResultado = int(resultado)
+    #validar si es direccion o llave y transformarlo en la llave que es
+    if(checaOperando1 != operando1):
+      operando1 = monolito.buscar(checaOperando1)
+    if(checaOperando2 != operando2):
+      operando2 =  monolito.buscar(checaOperando2)
+    if(checaResultado != resultado):
+      resultado = monolito.buscar(checaResultado)
+    #fin de la obtencion de direcciones 
     existe = monolito.buscar(operando1)
     print("operando1:" ,existe)
     existe2 = monolito.buscar(operando2)
@@ -518,6 +576,19 @@ def MayorQue(cuadruplo,monolito):
     print("operando2", operando2)
     resultado =  cuadruplo[3]
     print("res", resultado)
+    #validar que sean direcciones de tener algun valor real saldran diferentes en la comparacion
+    #indicando que esa temporal almacena la direccion de memoria indicada
+    checaOperando1 = int(operando1)
+    checaOperando2 = int(operando2)
+    checaResultado = int(resultado)
+    #validar si es direccion o llave y transformarlo en la llave que es
+    if(checaOperando1 != operando1):
+      operando1 = monolito.buscar(checaOperando1)
+    if(checaOperando2 != operando2):
+      operando2 =  monolito.buscar(checaOperando2)
+    if(checaResultado != resultado):
+      resultado = monolito.buscar(checaResultado)
+    #fin de la obtencion de direcciones 
     existe = monolito.buscar(operando1)
     print("operando1:" ,existe)
     existe2 = monolito.buscar(operando2)
@@ -537,6 +608,19 @@ def MenorQue(cuadruplo,monolito):
     print("operando2", operando2)
     resultado =  cuadruplo[3]
     print("res", resultado)
+    #validar que sean direcciones de tener algun valor real saldran diferentes en la comparacion
+    #indicando que esa temporal almacena la direccion de memoria indicada
+    checaOperando1 = int(operando1)
+    checaOperando2 = int(operando2)
+    checaResultado = int(resultado)
+    #validar si es direccion o llave y transformarlo en la llave que es
+    if(checaOperando1 != operando1):
+      operando1 = monolito.buscar(checaOperando1)
+    if(checaOperando2 != operando2):
+      operando2 =  monolito.buscar(checaOperando2)
+    if(checaResultado != resultado):
+      resultado = monolito.buscar(checaResultado)
+    #fin de la obtencion de direcciones 
     existe = monolito.buscar(operando1)
     print("operando1:" ,existe)
     existe2 = monolito.buscar(operando2)
@@ -556,6 +640,19 @@ def AndOp(cuadruplo,monolito):
     print("operando2", operando2)
     resultado =  cuadruplo[3]
     print("res", resultado)
+    #validar que sean direcciones de tener algun valor real saldran diferentes en la comparacion
+    #indicando que esa temporal almacena la direccion de memoria indicada
+    checaOperando1 = int(operando1)
+    checaOperando2 = int(operando2)
+    checaResultado = int(resultado)
+    #validar si es direccion o llave y transformarlo en la llave que es
+    if(checaOperando1 != operando1):
+      operando1 = monolito.buscar(checaOperando1)
+    if(checaOperando2 != operando2):
+      operando2 =  monolito.buscar(checaOperando2)
+    if(checaResultado != resultado):
+      resultado = monolito.buscar(checaResultado)
+    #fin de la obtencion de direcciones 
     existe = monolito.buscar(operando1)
     print("operando1:" ,existe)
     existe2 = monolito.buscar(operando2)
@@ -583,6 +680,19 @@ def OrOp(cuadruplo,monolito):
     print("operando2", operando2)
     resultado =  cuadruplo[3]
     print("res", resultado)
+    #validar que sean direcciones de tener algun valor real saldran diferentes en la comparacion
+    #indicando que esa temporal almacena la direccion de memoria indicada
+    checaOperando1 = int(operando1)
+    checaOperando2 = int(operando2)
+    checaResultado = int(resultado)
+    #validar si es direccion o llave y transformarlo en la llave que es
+    if(checaOperando1 != operando1):
+      operando1 = monolito.buscar(checaOperando1)
+    if(checaOperando2 != operando2):
+      operando2 =  monolito.buscar(checaOperando2)
+    if(checaResultado != resultado):
+      resultado = monolito.buscar(checaResultado)
+    #fin de la obtencion de direcciones 
     existe = monolito.buscar(operando1)
     print("operando1:" ,existe)
     existe2 = monolito.buscar(operando2)
@@ -606,6 +716,13 @@ def OrOp(cuadruplo,monolito):
 def Entrada(cuadruplo,monolito):
   ## ver como funciona luego
     operando1 = cuadruplo[1]
+    #validar que sean direcciones de tener algun valor real saldran diferentes en la comparacion
+    #indicando que esa temporal almacena la direccion de memoria indicada
+    checaOperando1 = int(operando1)
+    #validar si es direccion o llave y transformarlo en la llave que es
+    if(checaOperando1 != operando1):
+      operando1 = monolito.buscar(checaOperando1)
+    #fin de la obtencion de direcciones 
     print("operando1", operando1)
     existe = monolito.buscar(operando1)
     print("operando1:" ,existe)
@@ -615,6 +732,13 @@ def Entrada(cuadruplo,monolito):
 def Salida(cuadruplo,monolito):
     ## ver como funciona luego
     operando1 = cuadruplo[1]
+    #validar que sean direcciones de tener algun valor real saldran diferentes en la comparacion
+    #indicando que esa temporal almacena la direccion de memoria indicada
+    checaOperando1 = int(operando1)
+    #validar si es direccion o llave y transformarlo en la llave que es
+    if(checaOperando1 != operando1):
+      operando1 = monolito.buscar(checaOperando1)
+    #fin de la obtencion de direcciones 
     print("operando1", operando1)
     existe = monolito.buscar(operando1)
     print("operando1:" ,existe)
@@ -627,6 +751,16 @@ def Asignar( cuadruplo,monolito):
     print("operando1", operando1)
     resultado =  cuadruplo[3]
     print("res", resultado)
+    #validar que sean direcciones de tener algun valor real saldran diferentes en la comparacion
+    #indicando que esa temporal almacena la direccion de memoria indicada
+    checaOperando1 = int(operando1)
+    checaResultado =  int(resultado)
+    #validar si es direccion o llave y transformarlo en la llave que es
+    if(checaOperando1 != operando1):
+      operando1 = monolito.buscar(checaOperando1)
+    if(checaResultado != resultado):
+      resultado = monolito.buscar(checaResultado)
+    #fin de la obtencion de direcciones 
     existe = monolito.buscar(operando1)
     print("operando1:" ,existe)
     existeres = monolito.buscar(resultado)
@@ -636,6 +770,11 @@ def Asignar( cuadruplo,monolito):
 def GotoT(cuadruplo, monolito,indice):
     operando1 = cuadruplo[1]
     print("operando1", operando1)
+    #indicando que esa temporal almacena la direccion de memoria indicada
+    checaOperando1 = int(operando1)
+    #validar si es direccion o llave y transformarlo en la llave que es
+    if(checaOperando1 != operando1):
+      operando1 = monolito.buscar(checaOperando1)
     resultado =  cuadruplo[3]
     print("res", resultado)
     existe = monolito.buscar(operando1)
@@ -653,6 +792,11 @@ def GotoT(cuadruplo, monolito,indice):
 def GotoF(cuadruplo, monolito,indice):
     operando1 = cuadruplo[1]
     print("operando1", operando1)
+    #indicando que esa temporal almacena la direccion de memoria indicada
+    checaOperando1 = int(operando1)
+    #validar si es direccion o llave y transformarlo en la llave que es
+    if(checaOperando1 != operando1):
+      operando1 = monolito.buscar(checaOperando1)
     resultado =  cuadruplo[3]
     print("GOTOF", resultado)
     existe = monolito.buscar(operando1)
@@ -671,6 +815,39 @@ def Goto(cuadruplo, monolito):
     print("GOTO", resultado)
     return resultado - 1
     #monolito.insertaActual(resultado,existe)
+
+def Ver(cuadruplo,monolito):
+    valorVerificable =  cuadruplo[1]
+    menor = cuadruplo[2]
+    mayor = cuadruplo[3]
+    checaValorVerificable =  int(valorVerificable)
+    if(checaValorVerificable != valorVerificable):
+        valorVerificable = monolito.buscar(checaValorVerificable)
+    valor = monolito.buscar(valorVerificable)
+    print("valorVer: ",valor,"menor: ",menor,"mayor: ",mayor)
+    if(not ( (valor >= menor) and (valor <= mayor) ) ):
+      print("valor fuera del rango de arreglo")
+      raise SystemExit
+
+def DirArreglo(cuadruplo,monolito):
+    dirBase = cuadruplo[1]
+    print("dirBase: ",dirBase )
+    print("dirBase Valor:",dirBase)
+    desplazamiento =  cuadruplo[2]
+    print("desplazamiento: ",desplazamiento)
+    almacenaDezplazamiento = cuadruplo[3]
+    checaDesplazamiento = int(desplazamiento)
+    if(checaDesplazamiento != desplazamiento):
+        desplazamiento = monolito.buscar(checaDesplazamiento)
+    suma = monolito.buscar(desplazamiento)
+    print("suma: ",suma)
+    resultado =  dirBase + suma
+    monolito.insertaActual(almacenaDezplazamiento,resultado)
+
+
+
+
+
 
 
 
